@@ -14,6 +14,7 @@ import MapControls from './components/MapControls.jsx'
 import NewsTicker from './components/NewsTicker.jsx'
 import EventsDrawer from './components/EventsDrawer.jsx'
 import DataDetective from './components/DataDetective.jsx'
+import OutlookView from './components/OutlookView.jsx'
 import { useNasaEvents } from './hooks/useNasaEvents.js'
 import { quickStats } from './lib/explore.js'
 import { DEFAULT_MAP_STYLE, MAP_STYLES } from './lib/mapStyles.js'
@@ -61,6 +62,7 @@ export default function App() {
   const [showSig, setShowSig] = useState(false)
   const [demo, setDemo] = useState(null) // { demo, step }
   const [showDetective, setShowDetective] = useState(false)
+  const [showOutlook, setShowOutlook] = useState(false)
   const [selRegion, setSelRegion] = useState(null) // a place from the catalogue, or a drawn box
   const [regionData, setRegionData] = useState(null) // { series, record } | { error }
   const [draw, setDraw] = useState(null) // { start: {lat, lon} | null } while drawing an area
@@ -396,7 +398,7 @@ export default function App() {
       } else if (e.key === ']') cycleVariable(1)
       else if (e.key === '[') cycleVariable(-1)
       else if (e.key === 'Escape') {
-        if (showHow || showSig || showDetective) return // modals handle their own Escape
+        if (showHow || showSig || showDetective || showOutlook) return // modals handle their own Escape
         if (draw) setDraw(null)
         else if (demo) setDemo(null)
         else if (selRegion) setSelRegion(null)
@@ -409,7 +411,7 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [cycleVariable, demo, selectedId, showHow, showSig, eventsOpen, selectedEventId, draw, selRegion])
+  }, [cycleVariable, demo, selectedId, showHow, showSig, showOutlook, eventsOpen, selectedEventId, draw, selRegion])
 
   const hoverRegion = useMemo(() => (hoverCell ? findRegion(hoverCell.lat, hoverCell.lon, regions) : null), [hoverCell, regions])
   const regionMix = useMemo(
@@ -479,6 +481,7 @@ export default function App() {
           onChangeVariable={setVariableId}
           onHowItWorks={() => setShowHow(true)}
           onInvestigate={() => setShowDetective(true)}
+          onOutlook={() => setShowOutlook(true)}
           serial={serial}
           onToggleSerial={() => (serial.status === 'connected' ? serial.disconnect() : serial.connect())}
         />
@@ -634,6 +637,7 @@ export default function App() {
         />
       )}
       {showSig && <SignificanceExplainer onClose={() => setShowSig(false)} />}
+      {showOutlook && <OutlookView variables={variables} onClose={() => setShowOutlook(false)} />}
 
       {serial.error && (
         <div className="glass absolute bottom-24 left-1/2 z-40 -translate-x-1/2 px-4 py-2 text-muted" role="alert">

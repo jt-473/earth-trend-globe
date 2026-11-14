@@ -1,4 +1,4 @@
-export default function TopBar({ variables, variableId, onChangeVariable, onHowItWorks, onInvestigate, serial, onToggleSerial }) {
+export default function TopBar({ variables, variableId, onChangeVariable, onHowItWorks, onInvestigate, onOutlook, serial, onToggleSerial }) {
   const status = serial.status
   const serialLabel =
     status === 'connected' ? 'Controller connected' : status === 'connecting' ? 'Connecting…' : status === 'unsupported' ? 'Controller (Chrome only)' : 'Connect controller'
@@ -40,6 +40,15 @@ export default function TopBar({ variables, variableId, onChangeVariable, onHowI
           </svg>
           <span className="hidden md:inline">Investigate</span>
         </button>
+        {onOutlook && (
+          <button type="button" className="btn btn-ghost glass" onClick={onOutlook} aria-label="2040 outlook: what could the future look like?">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 17l5-5 4 3 8-8" />
+              <path d="M15 7h5v5" />
+            </svg>
+            <span>2040</span>
+          </button>
+        )}
         <button type="button" className="btn btn-ghost glass hidden sm:inline-flex" onClick={onHowItWorks}>
           How it works
         </button>
