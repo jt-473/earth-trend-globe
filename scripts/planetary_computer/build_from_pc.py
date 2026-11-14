@@ -100,6 +100,20 @@ def open_terraclimate():
     return ds, bool(lat[0] > lat[-1])
 
 
+def read_with_retry(read, label, tries=8):
+    """Read one band of Zarr chunks, retrying just this band when the connection drops
+    mid-download (aiohttp 'Response payload is not completed' and friends)."""
+    for attempt in range(tries):
+        try:
+            return read()
+        except Exception as e:
+            if attempt == tries - 1:
+                raise
+            wait = min(60, 5 * (attempt + 1))
+            print(f"  {label}: {type(e).__name__}: {str(e)[:120]}, retrying in {wait}s", flush=True)
+            time.sleep(wait)
+
+
 def fetch_year(var, year, cache_dir, retries=4):
     out = cache_dir / var / f"{year}.npz"
     if out.exists():
@@ -125,9 +139,11 @@ def fetch_year(var, year, cache_dir, retries=4):
                 for m0 in (0, 6):  # 6 months at a time keeps memory near 0.5 GB
                     half = idx[m0:m0 + 6]
                     if north_first:
-                        block = da.isel(time=half, lat=slice(r0, r1)).values
+                        block = read_with_retry(lambda: da.isel(time=half, lat=slice(r0, r1)).values, f"{var} {year} rows {r0}")
                     else:
-                        block = da.isel(time=half, lat=slice(SRC_ROWS - r1, SRC_ROWS - r0)).values[:, ::-1, :]
+                        block = read_with_retry(
+                            lambda: da.isel(time=half, lat=slice(SRC_ROWS - r1, SRC_ROWS - r0)).values[:, ::-1, :], f"{var} {year} rows {r0}"
+                        )
                     part_s = np.zeros((6, N_LAT, N_LON))
                     part_c = np.zeros((6, N_LAT, N_LON))
                     accumulate_rows(block.astype(np.float32, copy=False), r0, part_s, part_c)
@@ -152,13 +168,21 @@ def cmd_fetch(args):
     tc_vars = sorted({v for name in args.variables for v in APP_VARS[name]["inputs"]})
     tasks = [(v, y) for v in tc_vars for y in range(args.start, args.end + 1)]
     todo = [t for t in tasks if not (args.cache / t[0] / f"{t[1]}.npz").exists()]
+    failed = 0
     print(f"TerraClimate {', '.join(tc_vars)} {args.start}-{args.end}: {len(tasks)} variable-years, {len(todo)} to fetch")
     done = len(tasks) - len(todo)
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         futures = [pool.submit(fetch_year, v, y, args.cache) for v, y in todo]
+        failed = 0
         for f in as_completed(futures):
             done += 1
-            print(f"[{done}/{len(tasks)}] {f.result()}", flush=True)
+            try:
+                print(f"[{done}/{len(tasks)}] {f.result()}", flush=True)
+            except Exception as e:
+                failed += 1
+                print(f"[{done}/{len(tasks)}] FAILED: {e}", flush=True)
+    if failed:
+        print(f"{failed} variable-years failed. Run the same command again to retry just those.")
 
 
 # ---------------------------------------------------------------- build -----
