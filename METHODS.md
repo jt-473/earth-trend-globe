@@ -252,7 +252,7 @@ significantly rising and falling.
 
 ### Ranking score
 
-$$\text{score} = \min\left(1, \frac{|\text{average slope}|}{\text{colour range}}\right) \times \bigl(0.3 + 0.7 \times \max(\text{up share}, \text{down share})\bigr)$$
+$$\text{score} = \min\left(1, \frac{\lvert\text{average slope}\rvert}{\text{colour range}}\right) \times \bigl(0.3 + 0.7 \times \max(\text{up share}, \text{down share})\bigr)$$
 
 **In plain words:** places rank higher when they change a lot and when a large share of
 them changes significantly. This orders the suggestions in Investigate.
