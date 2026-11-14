@@ -132,6 +132,8 @@ def fetch_year(var, year, cache_dir, retries=4):
             sums = np.zeros((12, N_LAT, N_LON))
             counts = np.zeros((12, N_LAT, N_LON))
             band = 1024  # matches the Zarr chunk height
+            step, n_steps = 0, 2 * len([r for r in range(0, SRC_ROWS, band) if r + band > ROW_START and r < ROW_END])
+            print(f"  {var} {year}: started", flush=True)
             for r0 in range(0, SRC_ROWS, band):
                 r1 = min(SRC_ROWS, r0 + band)
                 if r1 <= ROW_START or r0 >= ROW_END:
@@ -149,6 +151,8 @@ def fetch_year(var, year, cache_dir, retries=4):
                     accumulate_rows(block.astype(np.float32, copy=False), r0, part_s, part_c)
                     sums[m0:m0 + 6] += part_s
                     counts[m0:m0 + 6] += part_c
+                    step += 1
+                    print(f"  {var} {year}: {step}/{n_steps} downloaded ({time.time() - t0:.0f}s)", flush=True)
             with np.errstate(invalid="ignore", divide="ignore"):
                 mean = (sums / counts).astype(np.float32)
             frac = (counts / (PX * PX)).astype(np.float32)
