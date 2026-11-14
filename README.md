@@ -19,6 +19,14 @@ might go by 2040.
   it would need.
 * **Live events.** Storms, floods, fires and icebergs from NASA's natural event
   tracker (EONET), each linked to the long-term trend at the same spot.
+* **2040 outlook.** A statistical model (trend plus realistic ups and downs, run
+  2,000 times and tested on 2008 to 2025) shows what 2040 could look like for
+  184 areas, written for people who don't study science.
+* **Month by month.** The side panel names every month and compares it with a
+  normal month of the same name.
+
+**How every number is calculated, with the name of each formula:
+[METHODS.md](METHODS.md).**
 
 Built from the "Earth Trend Globe – Frontend Design Brief".
 
@@ -75,6 +83,10 @@ Notes on the data:
 | `src/hooks/useNasaEvents.js` | Loads the events and refreshes them every 20 minutes |
 | `src/components/NewsTicker.jsx`, `EventsDrawer.jsx`, `EventIcon.jsx` | Headline bar, the events list and detail view, category icons |
 | `src/lib/places.js` | Continent and country label positions and the zoom levels they appear at |
+| `src/lib/outlook.js`, `scripts/build-outlook.mjs` | 2040 outlook model and the script that runs it for every area (`npm run build-outlook`, about 2 minutes) into `public/data/outlook` |
+| `src/components/OutlookView.jsx` | The 2040 outlook screen |
+| `src/components/MonthByMonth.jsx` | The month-by-month table in the side panel |
+| `METHODS.md` | Every calculation with its name, formula and plain-English meaning |
 | `scripts/generate-fake-data.mjs` | Old placeholder generator. Refuses to run while real data is present unless given `--force` |
 | `public/data/variables.json` | Names, plain-English definitions, units, colour ranges and sensor mapping. The dropdown, legend and side panel all read from here |
 | `public/data/regions.json` | Named areas (bounding boxes) plus a list of places for the nearest-place fallback |
