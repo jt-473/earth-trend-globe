@@ -28,6 +28,7 @@ import shutil
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import TimeoutError as FuturesTimeout
 from pathlib import Path
 
 import numpy as np
@@ -90,7 +91,14 @@ def open_terraclimate():
 
     catalog = pystac_client.Client.open(STAC_URL, modifier=planetary_computer.sign_inplace)
     asset = catalog.get_collection(COLLECTION).assets["zarr-abfs"]
-    ds = xr.open_dataset(asset.href, **asset.extra_fields["xarray:open_kwargs"])
+    kwargs = dict(asset.extra_fields["xarray:open_kwargs"])
+    opts = dict(kwargs.get("storage_options") or {})
+    # Give up on a stalled download instead of waiting forever (VPNs and flaky wifi).
+    timeouts = {"connection_timeout": 30, "read_timeout": 60}
+    try:
+        ds = xr.open_dataset(asset.href, **{**kwargs, "storage_options": {**opts, **timeouts}})
+    except TypeError:  # older adlfs without these options
+        ds = xr.open_dataset(asset.href, **kwargs)
     lat = ds["lat"].values
     lon = ds["lon"].values
     if lat.size != SRC_ROWS or lon.size != SRC_COLS:
@@ -104,14 +112,20 @@ def read_with_retry(read, label, tries=8):
     """Read one band of Zarr chunks, retrying just this band when the connection drops
     mid-download (aiohttp 'Response payload is not completed' and friends)."""
     for attempt in range(tries):
+        pool = ThreadPoolExecutor(max_workers=1)
         try:
-            return read()
+            # Hard limit as a backstop: a band that takes over 10 minutes is treated as stuck.
+            return pool.submit(read).result(timeout=600)
         except Exception as e:
+            if isinstance(e, FuturesTimeout):
+                e = RuntimeError("no progress for 10 minutes")
             if attempt == tries - 1:
                 raise
             wait = min(60, 5 * (attempt + 1))
             print(f"  {label}: {type(e).__name__}: {str(e)[:120]}, retrying in {wait}s", flush=True)
             time.sleep(wait)
+        finally:
+            pool.shutdown(wait=False)
 
 
 def fetch_year(var, year, cache_dir, retries=4):
