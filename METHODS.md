@@ -142,7 +142,7 @@ overstate how sure it is.
 
 Also called: Wald test on the slope, using the normal distribution.
 
-$$z = \frac{b}{\text{SE}(b)} \qquad p = 2\,\bigl(1 - \Phi(|z|)\bigr) \qquad \Phi(z) = \tfrac{1}{2}\Bigl(1 + \operatorname{erf}\bigl(z/\sqrt{2}\bigr)\Bigr)$$
+$$z = \frac{b}{\text{SE}(b)} \qquad p = 2\,\bigl(1 - \Phi(|z|)\bigr) \qquad \Phi(z) = \tfrac{1}{2}\Bigl(1 + \mathrm{erf}\bigl(z/\sqrt{2}\bigr)\Bigr)$$
 
 Rule: **significant if $p < 0.05$** (the same as $|z| \ge 1.96$).
 
@@ -160,9 +160,9 @@ on the globe, the p-value in The numbers.
 A non-parametric (rank-based) test, run on yearly averages of the anomalies (years with at
 least 9 months).
 
-$$S = \sum_{i<j} \operatorname{sign}(x_j - x_i) \qquad \tau = \frac{S}{n(n-1)/2}$$
+$$S = \sum_{i<j} \mathrm{sign}(x_j - x_i) \qquad \tau = \frac{S}{n(n-1)/2}$$
 
-$$\operatorname{Var}(S) = \frac{n(n-1)(2n+5)}{18} \qquad z = \frac{S - \operatorname{sign}(S)}{\sqrt{\operatorname{Var}(S)}}$$
+$$\mathrm{Var}(S) = \frac{n(n-1)(2n+5)}{18} \qquad z = \frac{S - \mathrm{sign}(S)}{\sqrt{\mathrm{Var}(S)}}$$
 
 **In plain words:** compare every year with every later year and count "went up" minus
 "went down". Tau runs from −1 (always falling) to +1 (always rising). Only the order
@@ -213,7 +213,7 @@ by that year. $R$ is the amount that gets full colour (temperature: 0.5 °C per 
 
 ### Colour strength (power-curve scaling) and ramp interpolation
 
-$$\text{strength} = \left|\operatorname{clamp}\!\left(\frac{\text{change}}{R}, -1, 1\right)\right|^{0.7} \qquad \text{opacity} = 0.2 + 0.8 \times \text{strength}$$
+$$\text{strength} = \left|\mathrm{clamp}\!\left(\frac{\text{change}}{R}, -1, 1\right)\right|^{0.7} \qquad \text{opacity} = 0.2 + 0.8 \times \text{strength}$$
 
 **In plain words:** the 0.7 power lifts medium-sized changes so they still show. The colour
 is picked by linear interpolation along a 5-colour ramp (pale cream → yellow → orange → red
@@ -286,7 +286,7 @@ $\varphi_Y$ capped at 0.8. The futures start from the last real month's wobble.
 
 $$\sigma_m = \sqrt{\frac{\sum e^2 \ (\text{that calendar month})}{N_m - 1}} \qquad V_{12}(\varphi) = \frac{1}{144}\sum_{i=1}^{12}\sum_{j=1}^{12} \varphi^{|i-j|}$$
 
-$$\sigma_Y^2 = \max\!\bigl(0,\ \operatorname{Var}(\text{yearly residuals}) - \bar{\sigma}^2\,V_{12}(\varphi)\bigr)$$
+$$\sigma_Y^2 = \max\!\bigl(0,\ \mathrm{Var}(\text{yearly residuals}) - \bar{\sigma}^2\,V_{12}(\varphi)\bigr)$$
 
 **In plain words:** $\sigma_m$ lets winter be wobblier than summer (or the other way
 round). $V_{12}$ is how much the average of 12 AR(1) months should vary on its own. If
@@ -295,7 +295,7 @@ $\sigma_Y$.
 
 ### Parameter uncertainty
 
-$$\text{SE}(\beta) = \max(\text{monthly SE from section 4},\ \text{yearly SE}) \qquad \text{SE}(L) = \sqrt{\operatorname{Var}(\text{yearly residuals}) / n_{\text{eff, yearly}}}$$
+$$\text{SE}(\beta) = \max(\text{monthly SE from section 4},\ \text{yearly SE}) \qquad \text{SE}(L) = \sqrt{\mathrm{Var}(\text{yearly residuals}) / n_{\text{eff, yearly}}}$$
 
 **In plain words:** we don't know the exact trend line, so each future picks its own:
 $\beta \sim N(\hat\beta, \text{SE}(\beta)^2)$ and $L \sim N(\hat{L}, \text{SE}(L)^2)$. The
@@ -336,7 +336,7 @@ better is used for that variable.
 
 ### Backtesting (out-of-sample hindcast)
 
-$$\text{training years} = \operatorname{clamp}\bigl(\operatorname{round}(0.6 \times \text{years}),\ 10,\ 30\bigr)$$
+$$\text{training years} = \mathrm{clamp}\bigl(\mathrm{round}(0.6 \times \text{years}),\ 10,\ 30\bigr)$$
 
 For temperature: train on 1981–2007, test on 2008–2025.
 
