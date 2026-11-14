@@ -64,7 +64,7 @@ a normal month of the same name.
 
 Also called: the "normal" or long-term monthly mean.
 
-$$c_m = \frac{1}{N_m} \sum_{\text{years}} x_{\text{year},\,m}$$
+$$c_m = \frac{1}{N_m} \sum_{\text{years}} x_{\text{year}, m}$$
 
 **In plain words:** the normal value for a month (say July) is the average of every July
 in the record.
@@ -89,9 +89,9 @@ every trend below.
 
 Also called: line of best fit, least-squares trend.
 
-$$b = \frac{\sum (t_i - \bar{t})(a_i - \bar{a})}{\sum (t_i - \bar{t})^2} \qquad \alpha = \bar{a} - b\,\bar{t}$$
+$$b = \frac{\sum (t_i - \bar{t})(a_i - \bar{a})}{\sum (t_i - \bar{t})^2} \qquad \alpha = \bar{a} - b \bar{t}$$
 
-$$\text{slope per decade} = 10\,b \qquad \text{total change} = b \times \text{years of data}$$
+$$\text{slope per decade} = 10 b \qquad \text{total change} = b \times \text{years of data}$$
 
 **In plain words:** finds the one straight line closest to all the dots (it makes the
 squared gaps as small as possible). $b$ is how much the value goes up each year; times 10
@@ -101,7 +101,7 @@ years"), the blue trend line, "Total change since 1981".
 
 ### Residuals and residual standard deviation
 
-$$e_i = a_i - (\alpha + b\,t_i) \qquad s = \sqrt{\frac{\sum e_i^2}{n - 2}}$$
+$$e_i = a_i - (\alpha + b t_i) \qquad s = \sqrt{\frac{\sum e_i^2}{n - 2}}$$
 
 **In plain words:** the residual is how far each month sits above or below the line. $s$
 is the typical size of those wobbles.
@@ -115,7 +115,7 @@ than chance would give.
 
 Also called: serial correlation, $r_1$.
 
-$$r_1 = \frac{\sum e_i\, e_{i-1}}{\sum e_i^2} \qquad \text{(kept between 0 and 0.95)}$$
+$$r_1 = \frac{\sum e_i  e_{i-1}}{\sum e_i^2} \qquad \text{(kept between 0 and 0.95)}$$
 
 **In plain words:** how much one month looks like the month before. A warm month is often
 followed by another warm month, so the months aren't fully independent.
@@ -124,7 +124,7 @@ followed by another warm month, so the months aren't fully independent.
 
 Method from Santer et al. (2000).
 
-$$n_\text{eff} = n\,\frac{1 - r_1}{1 + r_1}$$
+$$n_\text{eff} = n \frac{1 - r_1}{1 + r_1}$$
 
 **In plain words:** because neighbouring months are alike, 540 months carry less
 information than 540 separate measurements. This works out how many truly independent
@@ -142,7 +142,7 @@ overstate how sure it is.
 
 Also called: Wald test on the slope, using the normal distribution.
 
-$$z = \frac{b}{\text{SE}(b)} \qquad p = 2\,\bigl(1 - \Phi(|z|)\bigr) \qquad \Phi(z) = \tfrac{1}{2}\Bigl(1 + \mathrm{erf}\bigl(z/\sqrt{2}\bigr)\Bigr)$$
+$$z = \frac{b}{\text{SE}(b)} \qquad p = 2 \bigl(1 - \Phi(|z|)\bigr) \qquad \Phi(z) = \tfrac{1}{2}\Bigl(1 + \mathrm{erf}\bigl(z/\sqrt{2}\bigr)\Bigr)$$
 
 Rule: **significant if $p < 0.05$** (the same as $|z| \ge 1.96$).
 
@@ -193,7 +193,7 @@ band widen the further ahead it goes. For a proper forecast with tested ranges, 
 
 ### Power-law scaling of the slope's uncertainty
 
-$$\text{SE}(b) \propto T^{-3/2} \;\Rightarrow\; z \propto T^{3/2} \;\Rightarrow\; \text{extra years} = T\left(\left(\frac{1.96}{|z|}\right)^{2/3} - 1\right)$$
+$$\text{SE}(b) \propto T^{-3/2} \quad\Rightarrow\quad z \propto T^{3/2} \quad\Rightarrow\quad \text{extra years} = T\left(\left(\frac{1.96}{|z|}\right)^{2/3} - 1\right)$$
 
 **In plain words:** with a longer record the slope gets more certain: its uncertainty
 shrinks with the record length $T$ to the power 1.5. So we can work out how long the
@@ -213,7 +213,7 @@ by that year. $R$ is the amount that gets full colour (temperature: 0.5 °C per 
 
 ### Colour strength (power-curve scaling) and ramp interpolation
 
-$$\text{strength} = \left|\mathrm{clamp}\!\left(\frac{\text{change}}{R}, -1, 1\right)\right|^{0.7} \qquad \text{opacity} = 0.2 + 0.8 \times \text{strength}$$
+$$\text{strength} = \left|\mathrm{clamp}\left(\frac{\text{change}}{R}, -1, 1\right)\right|^{0.7} \qquad \text{opacity} = 0.2 + 0.8 \times \text{strength}$$
 
 **In plain words:** the 0.7 power lifts medium-sized changes so they still show. The colour
 is picked by linear interpolation along a 5-colour ramp (pale cream → yellow → orange → red
@@ -234,7 +234,7 @@ unsmoothed data.
 
 ### Area-weighted mean (cosine of latitude weighting)
 
-$$w = \cos(\text{latitude}) \qquad \bar{x}_t = \frac{\sum w\,x_t}{\sum w}$$
+$$w = \cos(\text{latitude}) \qquad \bar{x}_t = \frac{\sum w x_t}{\sum w}$$
 
 **In plain words:** grid squares get smaller towards the poles, so each point counts in
 proportion to the ground it covers. A month is used only if points covering at least half
@@ -252,7 +252,7 @@ significantly rising and falling.
 
 ### Ranking score
 
-$$\text{score} = \min\!\left(1, \frac{|\text{average slope}|}{\text{colour range}}\right) \times \bigl(0.3 + 0.7 \times \max(\text{up share}, \text{down share})\bigr)$$
+$$\text{score} = \min\left(1, \frac{|\text{average slope}|}{\text{colour range}}\right) \times \bigl(0.3 + 0.7 \times \max(\text{up share}, \text{down share})\bigr)$$
 
 **In plain words:** places rank higher when they change a lot and when a large share of
 them changes significantly. This orders the suggestions in Investigate.
@@ -266,7 +266,7 @@ of times. Built for 184 areas and six variables by `npm run build-outlook`.
 
 A linear trend with AR(1) noise, month-specific variability and a yearly random effect.
 
-$$x_t = L + \beta\,(t - \bar{t}) + \sigma_{m(t)}\,u_t + Y_{\text{year}(t)}$$
+$$x_t = L + \beta (t - \bar{t}) + \sigma_{m(t)} u_t + Y_{\text{year}(t)}$$
 
 **In plain words:** each future month = the trend line (level $L$ and slope $\beta$) + a
 monthly wobble $u$ scaled by how wobbly that calendar month usually is ($\sigma_m$) + a
@@ -275,7 +275,7 @@ season-free values from section 2.
 
 ### First-order autoregressive process, AR(1)
 
-$$u_t = \varphi\,u_{t-1} + \sqrt{1 - \varphi^2}\;\varepsilon_t \qquad Y_k = \varphi_Y\,Y_{k-1} + \sqrt{1 - \varphi_Y^2}\;\sigma_Y\,\varepsilon_k$$
+$$u_t = \varphi u_{t-1} + \sqrt{1 - \varphi^2} \varepsilon_t \qquad Y_k = \varphi_Y Y_{k-1} + \sqrt{1 - \varphi_Y^2} \sigma_Y \varepsilon_k$$
 
 **In plain words:** each month carries a share $\varphi$ of the last month's wobble, plus
 something new and random ($\varepsilon$). $\varphi$ is the lag-1 autocorrelation of the
@@ -286,7 +286,7 @@ $\varphi_Y$ capped at 0.8. The futures start from the last real month's wobble.
 
 $$\sigma_m = \sqrt{\frac{\sum e^2 \ (\text{that calendar month})}{N_m - 1}} \qquad V_{12}(\varphi) = \frac{1}{144}\sum_{i=1}^{12}\sum_{j=1}^{12} \varphi^{|i-j|}$$
 
-$$\sigma_Y^2 = \max\!\bigl(0,\ \mathrm{Var}(\text{yearly residuals}) - \bar{\sigma}^2\,V_{12}(\varphi)\bigr)$$
+$$\sigma_Y^2 = \max\bigl(0,\ \mathrm{Var}(\text{yearly residuals}) - \bar{\sigma}^2 V_{12}(\varphi)\bigr)$$
 
 **In plain words:** $\sigma_m$ lets winter be wobblier than summer (or the other way
 round). $V_{12}$ is how much the average of 12 AR(1) months should vary on its own. If
@@ -306,7 +306,7 @@ cautious choice.
 
 Random numbers: Box–Muller transform, from a Mulberry32 seeded random generator.
 
-$$\varepsilon = \sqrt{-2 \ln U_1}\,\cos(2\pi U_2) \qquad 2{,}000 \text{ futures per area per variable}$$
+$$\varepsilon = \sqrt{-2 \ln U_1} \cos(2\pi U_2) \qquad 2{,}000 \text{ futures per area per variable}$$
 
 **In plain words:** the model is run 2,000 times, each with its own trend line and its own
 random wobbles. Box–Muller turns two plain random numbers between 0 and 1 into one
@@ -354,7 +354,7 @@ was off by 0.20 °C. All 18 real years landed inside its 9 in 10 range.
 
 ### Coverage and calibration by bisection
 
-$$\text{coverage} = \frac{\text{real years inside the 5\%–95\% range}}{\text{all tested years}} \qquad \text{find } k \in [1, 4] \text{ so coverage} \ge 90\%$$
+$$\text{coverage} = \frac{\text{real years inside the 5 to 95 percent range}}{\text{all tested years}} \qquad \text{find } k \in [1, 4] \text{ so coverage} \ge 90 \text{ percent}$$
 
 **In plain words:** a 9 in 10 range should catch about 9 in 10 real years. The first
 version caught fewer (it was too confident), so the uncertainty of the level, the slope
@@ -419,7 +419,7 @@ $$\text{more by 2040} = \text{2040 middle value} - \text{trend value in 2025}$$
 
 Physics says warmer air holds about 7% more water vapour per 1 °C.
 
-$$\%\ \text{per °C} = \frac{100 \times (\text{humidity slope} \div \text{average humidity})}{\text{temperature slope}} = \frac{100 \times (0.120 \div 10.209)}{0.172} \approx 6.8\%$$
+$$\text{percent per °C} = \frac{100 \times (\text{humidity slope} \div \text{average humidity})}{\text{temperature slope}} = \frac{100 \times (0.120 \div 10.209)}{0.172} \approx 6.8 \text{ percent}$$
 
 **In plain words:** using the whole world's trends from our data, the air gained 6.8% more
 water vapour for each degree of warming. This is an independent check that the data hangs
