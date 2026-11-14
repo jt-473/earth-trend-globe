@@ -419,7 +419,7 @@ $$\text{more by 2040} = \text{2040 middle value} - \text{trend value in 2025}$$
 
 Physics says warmer air holds about 7% more water vapour per 1 °C.
 
-$$\text{percent per °C} = \frac{100 \times (\text{humidity slope} \div \text{average humidity})}{\text{temperature slope}} = \frac{100 \times (0.120 \div 10.209)}{0.172} \approx 6.8 \text{ percent}$$
+$$\text{percent per °C} = \frac{100 \times (\text{humidity slope} \div \text{average humidity})}{\text{temperature slope}} = \frac{100 \times (0.120 \div 10.209)}{0.172} \approx 6.8$$
 
 **In plain words:** using the whole world's trends from our data, the air gained 6.8% more
 water vapour for each degree of warming. This is an independent check that the data hangs
