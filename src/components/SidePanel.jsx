@@ -70,6 +70,7 @@ export default function SidePanel({
             <div className="mono text-muted">{varDef.units_long || varDef.units}</div>
           </div>
           <p className="mt-0.5 text-muted">{varDef.definition}.</p>
+          {varDef.source && <p className="mt-1 text-sm text-muted">Data: {varDef.source}</p>}
         </Section>
 
         <Section>

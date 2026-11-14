@@ -203,6 +203,35 @@ export function synthesiseSeries({ variable, cell, startYear = 1980, endYear, en
     if (!clipped && Math.abs(nudge) < 1e-9) break
   }
 
+  return {
+    variable,
+    cell_id: cell.id,
+    lat: cell.lat,
+    lon: cell.lon,
+    ...analyseSeries({ dates, values, decimals, predictEndYear }),
+  }
+}
+
+/**
+ * Everything the chart needs, worked out from a plain monthly series: seasons removed,
+ * straight-line trend with its 95% band, the dotted projection, Mann-Kendall on yearly
+ * means and the total change. Used for the fake series above and for the compact real
+ * files written by scripts/planetary_computer (which only store dates and values).
+ * dates: ["YYYY-MM", ...] consecutive months. values: numbers (no gaps).
+ */
+export function analyseSeries({ dates, values, decimals = 3, predictEndYear = 2040 }) {
+  const n = values.length
+  const t = values.map((_, i) => i / 12)
+  const months = dates.map((d) => Number(d.slice(5, 7)) - 1)
+
+  const monthSum = new Array(12).fill(0)
+  const monthCount = new Array(12).fill(0)
+  for (let i = 0; i < n; i++) {
+    monthSum[months[i]] += values[i]
+    monthCount[months[i]]++
+  }
+  const deseasonalised = values.map((v, i) => v - monthSum[months[i]] / monthCount[months[i]])
+
   const fit = linearFit(t, deseasonalised)
   const band = (ty, extra = 0) =>
     1.96 * fit.s * Math.sqrt(1 / fit.n + ((ty - fit.tBar) * (ty - fit.tBar)) / fit.sxx + extra)
@@ -216,8 +245,8 @@ export function synthesiseSeries({ variable, cell, startYear = 1980, endYear, en
   const predValues = []
   const predLow = []
   const predHigh = []
-  let py = endYear
-  let pm = endMonth
+  let py = Number(dates[n - 1].slice(0, 4))
+  let pm = Number(dates[n - 1].slice(5, 7))
   let pt = tEnd
   while (true) {
     pm++
@@ -247,10 +276,6 @@ export function synthesiseSeries({ variable, cell, startYear = 1980, endYear, en
 
   const r = (arr, d) => arr.map((x) => round(x, d))
   return {
-    variable,
-    cell_id: cell.id,
-    lat: cell.lat,
-    lon: cell.lon,
     dates,
     values: r(values, decimals),
     deseasonalised: r(deseasonalised, decimals),

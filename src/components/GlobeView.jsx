@@ -238,7 +238,8 @@ const GlobeView = forwardRef(function GlobeView(
       target[j] = rgb[0]
       target[j + 1] = rgb[1]
       target[j + 2] = rgb[2]
-      target[j + 3] = scale * (base + (1 - base) * fill)
+      // Cells with no data (e.g. oceans in a land-only dataset) stay clear.
+      target[j + 3] = c ? scale * (base + (1 - base) * fill) : 0
     }
     const anim = animRef.current
     const variableChanged = anim.lastVariable !== varDef.id
@@ -344,9 +345,9 @@ const GlobeView = forwardRef(function GlobeView(
     const record = trends ? trends.byId.get(snapped.id) : null
     if (snapped.id !== h.lastId) {
       h.lastId = snapped.id
-      onHoverCell && onHoverCell({ cell: record || { ...snapped, slope_per_decade: 0, significant: false }, x, y })
+      onHoverCell && onHoverCell({ cell: record || { ...snapped, slope_per_decade: 0, significant: false, noData: true }, x, y })
     } else {
-      onHoverCell && onHoverCell({ cell: record || { ...snapped, slope_per_decade: 0, significant: false }, x, y, moveOnly: true })
+      onHoverCell && onHoverCell({ cell: record || { ...snapped, slope_per_decade: 0, significant: false, noData: true }, x, y, moveOnly: true })
     }
   }, [trends, onHoverCell, raycaster, sphere, hitPoint, ndc])
 

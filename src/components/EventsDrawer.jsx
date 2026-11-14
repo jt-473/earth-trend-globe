@@ -48,8 +48,8 @@ function TrendLink({ event, variables, onShowTrend }) {
     setCell(null)
     const snapped = nearestCell(event.lat, event.lon)
     loadTrends(varDef.id)
-      .then((t) => alive && setCell(t.byId.get(snapped.id) || null))
-      .catch(() => alive && setCell(null))
+      .then((t) => alive && setCell(t.byId.get(snapped.id) || 'none'))
+      .catch(() => alive && setCell('none'))
     return () => {
       alive = false
     }
@@ -63,6 +63,7 @@ function TrendLink({ event, variables, onShowTrend }) {
     )
   }
   if (!varDef || !cell) return <p className="text-muted">Loading the long-term trend…</p>
+  if (cell === 'none') return <p className="text-muted">There is no long-term {varDef.name.toLowerCase()} data for this spot (our dataset covers land only).</p>
   const verdict = buildVerdict(cell, varDef)
   const toneCls =
     verdict.tone === 'up' ? 'border-rising/40 bg-rising/10' : verdict.tone === 'down' ? 'border-falling/40 bg-falling/10' : 'border-slate-400/25 bg-slate-400/10'

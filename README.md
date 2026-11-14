@@ -8,8 +8,8 @@ It also shows live storms, floods, fires and icebergs from NASA's natural event
 tracker (EONET), and links each one to the long-term trend at the same spot.
 
 > **Note:** the long-term trend data in `public/data` is generated placeholder
-> data in the real MERRA-2 file format, made by `npm run generate-data`. It is not
-> real NASA measurements yet. The live events are real and come straight from NASA.
+> data in the real MERRA-2 file format, made by `npm run generate-data`, until you
+> run the Planetary Computer script below for the real thing. The live events are real and come straight from NASA.
 
 Built from the "Earth Trend Globe – Frontend Design Brief" (Phases 1 to 6).
 Phase 7 (real data, deploy) is left for when the data team sends files.
@@ -64,6 +64,40 @@ Exactly as in the brief, so real files drop in with no code changes.
 
 To swap in real data: copy the data team's files over `public/data`, keep
 `variables.json`, `regions.json` and `demos.json`, and reload.
+
+## Real data from Microsoft Planetary Computer
+
+`scripts/planetary_computer/build_from_pc.py` replaces the placeholder files for
+**temperature, rainfall, sunlight and humidity** with real monthly data from
+[TerraClimate](https://planetarycomputer.microsoft.com/dataset/terraclimate)
+(Abatzoglou et al. 2018, CC0), read straight from the Planetary Computer's Zarr
+store on Azure. No account or key is needed.
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -r scripts/planetary_computer/requirements.txt
+python scripts/planetary_computer/build_from_pc.py fetch --start 2020 --end 2021   # quick test, times one year
+python scripts/planetary_computer/build_from_pc.py all                             # 1980-2021, all four variables
+```
+
+* Each 2° cell is the average of the 48 × 48 TerraClimate pixels (~4 km) inside it.
+  TerraClimate covers land only, so ocean cells have no data and stay clear on the globe.
+* Temperature is the mean of monthly max and min. Rainfall is converted to mm per day.
+  Sunlight is downward shortwave radiation. Humidity becomes water vapour pressure in hPa
+  (`variables.json` is updated to match).
+* The data on Planetary Computer runs to December 2021, so `end_year` becomes 2021.
+* Fetching is the slow part: about 45 Zarr chunks per variable per year. Finished years are
+  cached in `.cache/terraclimate`, so you can stop and resume. It runs fastest on an Azure VM
+  in West Europe (the Azure Global Offer credit covers this), next to the data.
+* Trend significance uses the least-squares slope of the deseasonalised monthly series, with
+  the p-value corrected for month-to-month autocorrelation. Mann-Kendall on yearly means is
+  shown alongside it in the panel.
+* Series files are compact (`start` + monthly `values`, ~3 KB). The browser works out the
+  seasons-removed line, trend, band and projection with the same code as the placeholder data
+  (`analyseSeries` in `src/lib/fakeSeries.js`). Once a variable is real, missing cells show no
+  chart rather than a made-up one.
+* Air pollution and ozone are not in TerraClimate and stay as placeholder data. The side panel
+  shows each variable's source so this is visible.
 
 ## Map styles
 

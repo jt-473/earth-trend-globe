@@ -1,4 +1,4 @@
-import { synthesiseSeries } from './fakeSeries.js'
+import { analyseSeries, synthesiseSeries } from './fakeSeries.js'
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const cache = new Map()
@@ -36,11 +36,15 @@ export async function loadTrends(variableId) {
   return cache.get(key)
 }
 
-// Time series for one cell. Uses the static file when it exists and falls back
-// to a synthesised series otherwise, so the UI works before real data arrives.
+// Time series for one cell. Uses the static file when it exists. Compact files (written
+// by scripts/planetary_computer, just dates + values) are completed here with the same
+// maths as the fake series. If the file is missing, placeholder variables get a
+// synthesised series so the UI works before data arrives; real variables get null
+// rather than a made-up chart.
 export async function loadSeries(variableId, cell, trends) {
   const key = `series:${variableId}:${cell.id}`
   if (!cache.has(key)) {
+    const decimals = trends.series_decimals ?? 3
     cache.set(
       key,
       fetch(`${base}/data/series/${variableId}/${cell.id}.json`)
@@ -49,21 +53,44 @@ export async function loadSeries(variableId, cell, trends) {
           const ct = r.headers.get('content-type') || ''
           if (!ct.includes('json')) throw new Error('not json')
           const json = await r.json()
+          if (!json.trend_line) {
+            return { variable: variableId, cell_id: cell.id, lat: cell.lat, lon: cell.lon, ...analyseSeries({ dates: expandDates(json), values: json.values, decimals }), source: 'file' }
+          }
           return { ...json, source: 'file' }
         })
-        .catch(() => ({
-          ...synthesiseSeries({
-            variable: variableId,
-            cell,
-            startYear: trends.start_year,
-            endYear: trends.end_year,
-            endMonth: trends.end_month || 12,
-          }),
-          source: 'synthetic',
-        })),
+        .catch(() =>
+          trends.data_source
+            ? null
+            : {
+                ...synthesiseSeries({
+                  variable: variableId,
+                  cell,
+                  startYear: trends.start_year,
+                  endYear: trends.end_year,
+                  endMonth: trends.end_month || 12,
+                }),
+                source: 'synthetic',
+              },
+        ),
     )
   }
   return cache.get(key)
+}
+
+// Compact files may give { start: "1980-01", values } instead of a full dates list.
+function expandDates(json) {
+  if (Array.isArray(json.dates)) return json.dates
+  let y = Number(json.start.slice(0, 4))
+  let m = Number(json.start.slice(5, 7))
+  return json.values.map(() => {
+    const d = `${y}-${String(m).padStart(2, '0')}`
+    m++
+    if (m > 12) {
+      m = 1
+      y++
+    }
+    return d
+  })
 }
 
 function inBbox(lon, lat, [lonMin, latMin, lonMax, latMax]) {
