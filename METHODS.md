@@ -160,7 +160,7 @@ on the globe, the p-value in The numbers.
 A non-parametric (rank-based) test, run on yearly averages of the anomalies (years with at
 least 9 months).
 
-$$S = \sum_{i<j} \mathrm{sign}(x_j - x_i) \qquad \tau = \frac{S}{n(n-1)/2}$$
+$$S = \sum_{i \lt j} \mathrm{sign}(x_j - x_i) \qquad \tau = \frac{S}{n(n-1)/2}$$
 
 $$\mathrm{Var}(S) = \frac{n(n-1)(2n+5)}{18} \qquad z = \frac{S - \mathrm{sign}(S)}{\sqrt{\mathrm{Var}(S)}}$$
 
