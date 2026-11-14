@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import TrendChart from './TrendChart.jsx'
 import Sparkline from './Sparkline.jsx'
+import MonthByMonth from './MonthByMonth.jsx'
 import { buildVerdict, directionWord } from '../lib/verdict.js'
 import { fmt, fmtSigned, fmtP, fmtCoords } from '../lib/format.js'
 import { yearsToSignificance, zFromP } from '../lib/stats.js'
@@ -142,6 +143,7 @@ export default function SidePanel({
           {series && series.source === 'synthetic' && (
             <p className="mt-2 text-muted">Showing placeholder data generated in the browser until the real series file arrives.</p>
           )}
+          <MonthByMonth key={`${varDef.id}:${cell.id}`} series={series} varDef={varDef} />
         </Section>
 
         <Section
