@@ -1,0 +1,73 @@
+{
+  "source": "NASA MERRA-2 monthly reanalysis, 2-degree grid",
+  "variables": [
+    {
+      "id": "temperature",
+      "name": "Temperature",
+      "definition": "How hot or cold the air is near the ground",
+      "units": "°C",
+      "units_per_decade": "°C per decade",
+      "decimals": 2,
+      "colour_range_per_decade": 0.5,
+      "verbs": { "up": "Getting warmer", "down": "Getting cooler", "none": "No clear warming or cooling" },
+      "sensor": { "key": "temp", "name": "DHT22 temperature sensor", "units": "°C" }
+    },
+    {
+      "id": "humidity",
+      "name": "Humidity",
+      "definition": "How much water vapour is in the air",
+      "units": "g/kg",
+      "units_per_decade": "g/kg per decade",
+      "decimals": 2,
+      "colour_range_per_decade": 0.25,
+      "verbs": { "up": "Getting more humid", "down": "Getting drier air", "none": "No clear change in humidity" },
+      "sensor": { "key": "humidity", "name": "DHT22 humidity sensor", "units": "%" }
+    },
+    {
+      "id": "rainfall",
+      "name": "Rainfall",
+      "definition": "How much water falls from the sky",
+      "units": "mm per day",
+      "units_per_decade": "mm per day, per decade",
+      "decimals": 2,
+      "colour_range_per_decade": 0.3,
+      "verbs": { "up": "Getting wetter", "down": "Getting drier", "none": "No clear change in rainfall" },
+      "sensor": { "key": "rain", "name": "Rain sensor (optional)", "units": "mm" }
+    },
+    {
+      "id": "sunlight",
+      "name": "Sunlight",
+      "definition": "How much of the sun's energy reaches the ground",
+      "units": "W/m²",
+      "units_per_decade": "W/m² per decade",
+      "decimals": 1,
+      "colour_range_per_decade": 3,
+      "verbs": { "up": "Getting brighter", "down": "Getting dimmer", "none": "No clear change in sunlight" },
+      "sensor": { "key": "light", "name": "LDR light sensor", "units": "LDR units" }
+    },
+    {
+      "id": "air_pollution",
+      "name": "Air pollution",
+      "definition": "How hazy the air is from tiny particles like dust and smoke",
+      "units": "AOD",
+      "units_long": "aerosol optical depth (no units)",
+      "units_per_decade": "AOD per decade",
+      "decimals": 3,
+      "colour_range_per_decade": 0.03,
+      "verbs": { "up": "Getting hazier", "down": "Getting clearer", "none": "No clear change in haze" },
+      "sensor": { "key": "air", "name": "MQ-135 air quality sensor", "units": "ppm" }
+    },
+    {
+      "id": "ozone",
+      "name": "Ozone",
+      "definition": "The total amount of ozone above a spot, the layer that blocks harmful UV",
+      "units": "DU",
+      "units_long": "Dobson units",
+      "units_per_decade": "DU per decade",
+      "decimals": 1,
+      "colour_range_per_decade": 4,
+      "verbs": { "up": "Ozone layer thickening", "down": "Ozone layer thinning", "none": "No clear change in ozone" },
+      "sensor": null
+    }
+  ]
+}

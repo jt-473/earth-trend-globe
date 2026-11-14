@@ -1,0 +1,26 @@
+{
+  "name": "earth-trend-globe",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "generate-data": "node scripts/generate-fake-data.mjs"
+  },
+  "dependencies": {
+    "plotly.js-basic-dist-min": "^4.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-globe.gl": "^2.38.0",
+    "react-plotly.js": "^4.1.0",
+    "three": "^0.187.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.5",
+    "@vitejs/plugin-react": "^6.3.0",
+    "tailwindcss": "^4.3.5",
+    "vite": "^8.3.8"
+  }
+}
