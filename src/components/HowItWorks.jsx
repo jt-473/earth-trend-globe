@@ -8,7 +8,7 @@ export default function HowItWorks({ onClose, variables }) {
           <span className="mono mt-0.5 h-7 w-7 shrink-0 rounded-full bg-accent/20 text-center leading-7 text-accent">1</span>
           <div>
             <div className="font-semibold">Pick a variable</div>
-            <p className="text-muted">The dropdown switches between six things NASA has measured every month since 1980. The globe recolours smoothly.</p>
+            <p className="text-muted">The dropdown switches between six things NASA has recorded every month since 1981 (sunlight since 1984, haze since 2001). The globe recolours smoothly.</p>
           </div>
         </li>
         <li className="flex gap-3">
@@ -70,6 +70,17 @@ export default function HowItWorks({ onClose, variables }) {
             </p>
           </div>
         </li>
+        <li className="flex gap-3">
+          <span className="mono mt-0.5 h-7 w-7 shrink-0 rounded-full bg-accent/20 text-center leading-7 text-accent">8</span>
+          <div>
+            <div className="font-semibold">Be a data detective</div>
+            <p className="text-muted">
+              Press Investigate, choose what you're curious about and where: search a place, pick a kind of place like deserts or cities, or draw your own area on
+              the globe. You get places ranked by how clearly they're changing, with a reason to look at each. Opening one averages every grid point inside it into
+              a single record and tests that trend.
+            </p>
+          </div>
+        </li>
       </ol>
 
       <h3 className="mt-6 mb-2 font-semibold">The six variables</h3>
@@ -86,9 +97,10 @@ export default function HowItWorks({ onClose, variables }) {
 
       <h3 className="mt-6 mb-2 font-semibold">Where the data comes from</h3>
       <p className="text-muted">
-        NASA's MERRA-2 reanalysis blends satellite and ground observations into a consistent monthly record from 1980 to now, here averaged onto a 2° grid. The
-        trend at every grid point is a straight line fitted to the monthly values with the seasonal cycle removed. The p-value and Mann-Kendall test tell us whether that
-        line could have appeared by chance.
+        Monthly values from NASA POWER, sampled every 2° across the globe. Temperature, humidity, rainfall, haze and ozone come from NASA's MERRA-2 reanalysis, which
+        blends satellite and ground observations into one consistent record. Sunlight comes from NASA's GEWEX SRB and CERES satellite projects. The trend at every grid
+        point, or across a whole region, is a straight line fitted to the monthly values with the seasonal cycle removed. Its p-value allows for the way one month
+        tends to look like the next, so it doesn't overstate certainty, and the Mann-Kendall test checks the same trend a second way.
       </p>
 
       <h3 className="mt-6 mb-2 font-semibold">Keyboard and controller</h3>

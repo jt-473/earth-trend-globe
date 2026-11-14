@@ -1,0 +1,1 @@
+{"variable":"air_pollution","source":"MERRA-2 (via NASA POWER), aerosol optical depth at 550 nm","start_year":1981,"start_month":1,"months":540,"scale":0.0001,"decimals":3,"nodata":-32768,"n_lat":89,"n_lon":180,"rows_per_band":9,"bands":10}

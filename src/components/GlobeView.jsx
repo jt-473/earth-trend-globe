@@ -105,6 +105,21 @@ function paintTexture(cellRgba, out) {
   }
 }
 
+// Points along the edge of a lat/lon box, close together so the outline follows the
+// lines of latitude instead of cutting across the globe.
+function boxOutline([lonMin, latMin, lonMax, latMax]) {
+  const span = lonMin <= lonMax ? lonMax - lonMin : lonMax + 360 - lonMin
+  const wrap = (lon) => (lon > 180 ? lon - 360 : lon)
+  const pts = []
+  const steps = Math.max(2, Math.ceil(span))
+  for (let i = 0; i <= steps; i++) pts.push({ lat: latMin, lon: wrap(lonMin + (span * i) / steps) })
+  for (let lat = latMin + 1; lat < latMax; lat++) pts.push({ lat, lon: wrap(lonMin + span) })
+  for (let i = steps; i >= 0; i--) pts.push({ lat: latMax, lon: wrap(lonMin + (span * i) / steps) })
+  for (let lat = latMax - 1; lat > latMin; lat--) pts.push({ lat, lon: lonMin })
+  pts.push(pts[0])
+  return pts
+}
+
 const GlobeView = forwardRef(function GlobeView(
   {
     trends,
@@ -117,6 +132,10 @@ const GlobeView = forwardRef(function GlobeView(
     events = null,
     selectedEventId = null,
     onSelectEvent,
+    regionBox = null, // [lonMin, latMin, lonMax, latMax] outlined on the globe
+    drawMode = false, // clicks pick the corners of an area instead of a single place
+    drawStart = null, // first corner while drawing
+    onDrawClick,
     autoRotate,
     mapStyle,
     dataOpacity = 0.7,
@@ -363,6 +382,34 @@ const GlobeView = forwardRef(function GlobeView(
     },
     [resolveHover, onHoverCell],
   )
+  // Drawing an area: take each corner straight from where the pointer goes down and up,
+  // and ignore drags (those spin the globe).
+  const downRef = useRef(null)
+  const suppressClickRef = useRef(0)
+  const onPointerDown = useCallback((e) => {
+    downRef.current = { x: e.clientX, y: e.clientY }
+  }, [])
+  const onPointerUp = useCallback(
+    (e) => {
+      const d = downRef.current
+      downRef.current = null
+      if (!drawMode || !d || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6) return
+      suppressClickRef.current = performance.now() + 600
+      if (e.target && e.target.closest && e.target.closest('.event-pin, .demo-pin')) return
+      const g = globeRef.current
+      const wrap = wrapRef.current
+      if (!g || !wrap) return
+      const rect = wrap.getBoundingClientRect()
+      ndc.set(((e.clientX - rect.left) / rect.width) * 2 - 1, -(((e.clientY - rect.top) / rect.height) * 2 - 1))
+      raycaster.setFromCamera(ndc, g.camera())
+      const hit = raycaster.ray.intersectSphere(sphere, hitPoint)
+      if (!hit) return
+      const { lat, lng } = g.toGeoCoords(hit)
+      onDrawClick && onDrawClick(lat, lng)
+    },
+    [drawMode, onDrawClick, raycaster, sphere, hitPoint, ndc],
+  )
+
   const onPointerLeave = useCallback(() => {
     hoverRef.current.lastId = null
     hoverRef.current.pending = null
@@ -371,24 +418,28 @@ const GlobeView = forwardRef(function GlobeView(
 
   const handleGlobeClick = useCallback(
     ({ lat, lng }) => {
+      // Draw clicks are read from the pointer itself (below). The click that finishes a
+      // drawing must not also select a single place once draw mode has switched off.
+      if (drawMode || performance.now() < suppressClickRef.current) return
       if (!trends) return
       const snapped = nearestCell(lat, lng)
       const record = trends.byId.get(snapped.id)
       if (record) onSelectCell && onSelectCell(record)
     },
-    [trends, onSelectCell],
+    [trends, onSelectCell, drawMode],
   )
 
   const selectedEvent = useMemo(() => (events && selectedEventId ? events.find((e) => e.id === selectedEventId) : null), [events, selectedEventId])
   const rings = useMemo(() => {
     const r = []
-    if (selectedCell) r.push({ lat: selectedCell.lat, lng: selectedCell.lon, rgb: '34, 211, 238' })
+    if (selectedCell && !selectedCell.isRegion) r.push({ lat: selectedCell.lat, lng: selectedCell.lon, rgb: '34, 211, 238' })
+    if (drawStart) r.push({ lat: drawStart.lat, lng: drawStart.lon, rgb: '34, 211, 238' })
     if (selectedEvent) {
       const n = parseInt(categoryInfo(selectedEvent.category).color.slice(1), 16)
       r.push({ lat: selectedEvent.lat, lng: selectedEvent.lon, rgb: `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}` })
     }
     return r
-  }, [selectedCell, selectedEvent])
+  }, [selectedCell, selectedEvent, drawStart])
   // The street map already prints country names, so only continents are added there.
   const showCountries = showLabels && style.id !== 'map'
   const onSelectEventRef = useRef(onSelectEvent)
@@ -402,7 +453,11 @@ const GlobeView = forwardRef(function GlobeView(
   }, [selectedEventId, events])
 
   // Storm paths, drawn as moving dotted lines.
-  const tracks = useMemo(() => (events ? events.filter((e) => e.track) : []), [events])
+  const tracks = useMemo(() => {
+    const out = events ? events.filter((e) => e.track) : []
+    if (regionBox) out.push({ id: 'region-outline', kind: 'region', track: boxOutline(regionBox) })
+    return out
+  }, [events, regionBox])
 
   const htmlItems = useMemo(() => {
     const items = []
@@ -481,7 +536,14 @@ const GlobeView = forwardRef(function GlobeView(
   const filter = useCallback((obj) => !obj.__trendMesh, [])
 
   return (
-    <div ref={wrapRef} className="absolute inset-0 isolate z-0" data-zoom="0" onPointerMove={onPointerMove} onPointerLeave={onPointerLeave}>
+    <div
+      ref={wrapRef}
+      className={`absolute inset-0 isolate z-0 ${drawMode ? 'cursor-crosshair' : ''}`}
+      data-zoom="0"
+      onPointerMove={onPointerMove}
+      onPointerDown={onPointerDown}
+      onPointerUp={onPointerUp}
+      onPointerLeave={onPointerLeave}>
       <Globe
         ref={globeRef}
         width={width}
@@ -515,11 +577,11 @@ const GlobeView = forwardRef(function GlobeView(
         pathPointLat={(p) => p.lat}
         pathPointLng={(p) => p.lon}
         pathPointAlt={0.006}
-        pathColor={(d) => (d.active ? categoryInfo(d.category).color : 'rgba(167, 139, 250, 0.55)')}
-        pathStroke={1.6}
-        pathDashLength={0.25}
-        pathDashGap={0.12}
-        pathDashAnimateTime={6000}
+        pathColor={(d) => (d.kind === 'region' ? '#22d3ee' : d.active ? categoryInfo(d.category).color : 'rgba(167, 139, 250, 0.55)')}
+        pathStroke={(d) => (d.kind === 'region' ? 2.4 : 1.6)}
+        pathDashLength={(d) => (d.kind === 'region' ? 1 : 0.25)}
+        pathDashGap={(d) => (d.kind === 'region' ? 0 : 0.12)}
+        pathDashAnimateTime={(d) => (d.kind === 'region' ? 0 : 6000)}
         pathTransitionDuration={0}
         htmlElementsData={htmlItems}
         htmlLat={(d) => d.lat}

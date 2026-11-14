@@ -1,5 +1,5 @@
 {
-  "source": "NASA MERRA-2 monthly reanalysis, 2-degree grid",
+  "source": "NASA POWER monthly data (MERRA-2 reanalysis; sunlight from GEWEX SRB and CERES), sampled on a 2-degree grid, 1981 to 2025",
   "variables": [
     {
       "id": "temperature",
@@ -9,8 +9,16 @@
       "units_per_decade": "°C per decade",
       "decimals": 2,
       "colour_range_per_decade": 0.5,
-      "verbs": { "up": "Getting warmer", "down": "Getting cooler", "none": "No clear warming or cooling" },
-      "sensor": { "key": "temp", "name": "DHT22 temperature sensor", "units": "°C" }
+      "verbs": {
+        "up": "Getting warmer",
+        "down": "Getting cooler",
+        "none": "No clear warming or cooling"
+      },
+      "sensor": {
+        "key": "temp",
+        "name": "DHT22 temperature sensor",
+        "units": "°C"
+      }
     },
     {
       "id": "humidity",
@@ -20,8 +28,16 @@
       "units_per_decade": "g/kg per decade",
       "decimals": 2,
       "colour_range_per_decade": 0.25,
-      "verbs": { "up": "Getting more humid", "down": "Getting drier air", "none": "No clear change in humidity" },
-      "sensor": { "key": "humidity", "name": "DHT22 humidity sensor", "units": "%" }
+      "verbs": {
+        "up": "Getting more humid",
+        "down": "Getting drier air",
+        "none": "No clear change in humidity"
+      },
+      "sensor": {
+        "key": "humidity",
+        "name": "DHT22 humidity sensor",
+        "units": "%"
+      }
     },
     {
       "id": "rainfall",
@@ -30,9 +46,17 @@
       "units": "mm per day",
       "units_per_decade": "mm per day, per decade",
       "decimals": 2,
-      "colour_range_per_decade": 0.3,
-      "verbs": { "up": "Getting wetter", "down": "Getting drier", "none": "No clear change in rainfall" },
-      "sensor": { "key": "rain", "name": "Rain sensor (optional)", "units": "mm" }
+      "colour_range_per_decade": 0.2,
+      "verbs": {
+        "up": "Getting wetter",
+        "down": "Getting drier",
+        "none": "No clear change in rainfall"
+      },
+      "sensor": {
+        "key": "rain",
+        "name": "Rain sensor (optional)",
+        "units": "mm"
+      }
     },
     {
       "id": "sunlight",
@@ -41,9 +65,17 @@
       "units": "W/m²",
       "units_per_decade": "W/m² per decade",
       "decimals": 1,
-      "colour_range_per_decade": 3,
-      "verbs": { "up": "Getting brighter", "down": "Getting dimmer", "none": "No clear change in sunlight" },
-      "sensor": { "key": "light", "name": "LDR light sensor", "units": "LDR units" }
+      "colour_range_per_decade": 3.5,
+      "verbs": {
+        "up": "Getting brighter",
+        "down": "Getting dimmer",
+        "none": "No clear change in sunlight"
+      },
+      "sensor": {
+        "key": "light",
+        "name": "LDR light sensor",
+        "units": "LDR units"
+      }
     },
     {
       "id": "air_pollution",
@@ -53,9 +85,17 @@
       "units_long": "aerosol optical depth (no units)",
       "units_per_decade": "AOD per decade",
       "decimals": 3,
-      "colour_range_per_decade": 0.03,
-      "verbs": { "up": "Getting hazier", "down": "Getting clearer", "none": "No clear change in haze" },
-      "sensor": { "key": "air", "name": "MQ-135 air quality sensor", "units": "ppm" }
+      "colour_range_per_decade": 0.015,
+      "verbs": {
+        "up": "Getting hazier",
+        "down": "Getting clearer",
+        "none": "No clear change in haze"
+      },
+      "sensor": {
+        "key": "air",
+        "name": "MQ-135 air quality sensor",
+        "units": "ppm"
+      }
     },
     {
       "id": "ozone",
@@ -65,8 +105,12 @@
       "units_long": "Dobson units",
       "units_per_decade": "DU per decade",
       "decimals": 1,
-      "colour_range_per_decade": 4,
-      "verbs": { "up": "Ozone layer thickening", "down": "Ozone layer thinning", "none": "No clear change in ozone" },
+      "colour_range_per_decade": 2,
+      "verbs": {
+        "up": "Ozone layer thickening",
+        "down": "Ozone layer thinning",
+        "none": "No clear change in ozone"
+      },
       "sensor": null
     }
   ]

@@ -1,29 +1,55 @@
 # Earth Trend Globe
 
 Interactive 3D globe for the NASA Space Apps challenge on Earth science trends.
-Spin the globe, pick a variable, click anywhere to see how it has changed since
-1980, whether the change is significant, and where it might go by 2040.
+Spin the globe, pick a variable, click anywhere or choose a whole region to see
+how it has changed since 1981, whether the change is significant, and where it
+might go by 2040.
 
-It also shows live storms, floods, fires and icebergs from NASA's natural event
-tracker (EONET), and links each one to the long-term trend at the same spot.
+* **Real NASA data.** Monthly values from NASA POWER (MERRA-2 reanalysis, plus
+  GEWEX SRB and CERES for sunlight), 1981 to 2025, every 2 degrees.
+* **Be a data detective.** Answer two questions (what, and where) and get places
+  ranked by how clearly they are changing, with a reason to look at each. Search
+  a place, pick a kind of place, or draw your own area on the globe.
+* **Regions.** Any area is averaged into one monthly record (area-weighted) and
+  tested the same way as a single point. If parts of it rise and parts fall,
+  the panel says so.
+* **Significance.** Slope per decade, a p-value that allows for month-to-month
+  memory in the data, the Mann-Kendall test, and a 95% confidence band. When a
+  trend isn't significant yet, the panel estimates how many more years of data
+  it would need.
+* **Live events.** Storms, floods, fires and icebergs from NASA's natural event
+  tracker (EONET), each linked to the long-term trend at the same spot.
 
-> **Note:** the long-term trend data in `public/data` is generated placeholder
-> data in the real MERRA-2 file format, made by `npm run generate-data`. It is not
-> real NASA measurements yet. The live events are real and come straight from NASA.
-
-Built from the "Earth Trend Globe – Frontend Design Brief" (Phases 1 to 6).
-Phase 7 (real data, deploy) is left for when the data team sends files.
+Built from the "Earth Trend Globe – Frontend Design Brief".
 
 ## Run it
 
 ```bash
 npm install
-npm run generate-data   # writes fake MERRA-2 style files into public/data
 npm run dev             # http://localhost:5173
 ```
 
+The real data is already in `public/data`, so that's all you need.
 `npm run build` makes a static site in `dist/` ready for Vercel or Netlify.
-No backend is needed. Everything is static JSON under `public/data`.
+No backend is needed. Everything is static files under `public/data`.
+
+### Refreshing the real data
+
+```bash
+npm run fetch-data   # download NASA POWER monthly data for 16,020 points (about 2 hours)
+npm run build-data   # turn it into public/data (a few seconds)
+```
+
+`fetch-data` keeps what it downloads in `.cache/power` (not committed) and skips
+points it already has, so it is safe to stop and run again, and running it again
+fills any points that failed. NASA POWER is free and needs no account.
+
+Notes on the data:
+* Values are NASA POWER's native grid sampled at each 2-degree point, not
+  averages over the whole 2-degree square.
+* Sunlight starts in 1984 and haze (aerosol optical depth) in 2001, because
+  that is where those records begin.
+* Sunlight is converted from MJ/m²/day to W/m² (× 11.574).
 
 ## What is where
 
@@ -33,10 +59,14 @@ No backend is needed. Everything is static JSON under `public/data`.
 | `src/components/GlobeView.jsx` | react-globe.gl globe. The 16,020 grid values are blended into one smooth colour texture wrapped just above the map, repainted and cross-faded when the variable changes |
 | `src/components/SidePanel.jsx` | Place, variable, verdict card, Plotly graph, prediction note, the numbers, "How it connects", live sensor reading |
 | `src/components/TrendChart.jsx` | Plotly chart: monthly line, trend line, 95% band, dotted projection with widening band |
-| `src/components/TimeSlider.jsx` | 1980 to 2040 slider with measured/projected styling and play button |
+| `src/components/TimeSlider.jsx` | 1981 to 2040 slider with measured/projected styling and play button |
 | `src/components/Legend.jsx`, `TopBar.jsx`, `Tooltip.jsx`, `IntroScreen.jsx`, `DemoOverlay.jsx`, `HowItWorks.jsx`, `SignificanceExplainer.jsx` | The other screens and cards |
 | `src/hooks/useSerialController.js` | Web Serial link to the Arduino/ESP32 box |
-| `src/lib/data.js` | Loads the JSON files. Falls back to a synthesised series when a cell has no file yet |
+| `src/lib/data.js` | Loads the JSON files and the monthly band files; builds any point's or region's series in the browser |
+| `src/lib/stats.js` | Trend statistics shared by the browser and the build script: anomalies, trend line, autocorrelation-aware p-value, Mann-Kendall, years to significance |
+| `src/lib/explore.js` | Data detective logic: place catalogue and search, kinds of place, "why look here" hints, ranking places by trend |
+| `src/components/DataDetective.jsx` | The question flow: what, where, then ranked suggestions |
+| `scripts/fetch-nasa-power.mjs`, `scripts/build-real-data.mjs` | Real data pipeline: download from NASA POWER, then write `public/data` |
 | `src/lib/fakeSeries.js` | Deterministic fake monthly series, shared by the browser and the generator script. Each one's fitted line equals the cell's slope in the trends file, and its noise is sized so the chart agrees with the cell's significance |
 | `src/lib/colors.js` | Red-blue diverging ramps, how see-through each trend is, and the pale "not significant" colour |
 | `src/lib/mapStyles.js` | The three map looks: satellite, night lights and street map |
@@ -45,7 +75,7 @@ No backend is needed. Everything is static JSON under `public/data`.
 | `src/hooks/useNasaEvents.js` | Loads the events and refreshes them every 20 minutes |
 | `src/components/NewsTicker.jsx`, `EventsDrawer.jsx`, `EventIcon.jsx` | Headline bar, the events list and detail view, category icons |
 | `src/lib/places.js` | Continent and country label positions and the zoom levels they appear at |
-| `scripts/generate-fake-data.mjs` | Writes `trends_<variable>.json` for all six variables and series files for the demo locations |
+| `scripts/generate-fake-data.mjs` | Old placeholder generator. Refuses to run while real data is present unless given `--force` |
 | `public/data/variables.json` | Names, plain-English definitions, units, colour ranges and sensor mapping. The dropdown, legend and side panel all read from here |
 | `public/data/regions.json` | Named areas (bounding boxes) plus a list of places for the nearest-place fallback |
 | `public/data/demos.json` | Guided demo steps: lat, lon, variable, year, caption |
@@ -57,13 +87,16 @@ Exactly as in the brief, so real files drop in with no code changes.
 * `public/data/trends_<variable>.json` colours the globe:
   `{ variable, units_per_decade, start_year, end_year, cells: [{ id, lat, lon, slope_per_decade, p_value, significant, direction }] }`
   Cell ids are `c_<lat>_<lon>` on even degrees, for example `c_54_-6` covers 53 to 55 N and 7 to 5 W.
-* `public/data/series/<variable>/<cell id>.json` is loaded on click:
+* `public/data/series/<variable>/<cell id>.json` (brief format) is used when it
+  exists. The build script writes these for the demo locations:
   `{ dates, values, deseasonalised, trend_line, ci_low, ci_high, prediction: { dates, values, low, high }, mann_kendall: { tau, p_value }, total_change }`
-  Missing files are synthesised in the browser so the UI never breaks before real data arrives.
-  To write a file for every cell (about 100k files) run `node scripts/generate-fake-data.mjs --all-series`.
+* `public/data/monthly/<variable>.json` and `monthly/<variable>/band_N.bin` hold
+  every point's monthly values as 16-bit integers (value = integer × scale), nine
+  rows of latitude per file, so the browser only loads the bands it needs. Any
+  point's or region's series is built from these with `src/lib/stats.js`.
 
-To swap in real data: copy the data team's files over `public/data`, keep
-`variables.json`, `regions.json` and `demos.json`, and reload.
+If the data team delivers their own files in the brief's format, copy them over
+`public/data` and they take priority for those points.
 
 ## Map styles
 

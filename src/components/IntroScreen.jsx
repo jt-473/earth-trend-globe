@@ -10,7 +10,7 @@ export default function IntroScreen({ onStart, onDemo, ready, mapStyle, onChange
         </div>
         <h1 className="text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl">Earth Trend Globe</h1>
         <p className="mx-auto mt-4 max-w-md text-lg text-muted">
-          Spin the planet, pick a variable and click anywhere to see how it has changed since 1980, whether that change is real, and where it points by 2040.
+          Spin the planet, pick a variable and click anywhere to see how it has changed since 1981, whether that change is real, and where it points by 2040.
         </p>
         <div className="mt-7">
           <div id="view-label" className="mb-2 font-semibold">
@@ -51,7 +51,7 @@ export default function IntroScreen({ onStart, onDemo, ready, mapStyle, onChange
             Watch a demo
           </button>
         </div>
-        <p className="mt-6 text-muted">Data: NASA MERRA-2 monthly reanalysis, 1980 to now, on a 2° grid covering the whole world.</p>
+        <p className="mt-6 text-muted">Data: real monthly NASA data (MERRA-2 via NASA POWER), 1981 to 2025, every 2° across the whole world.</p>
       </div>
     </div>
   )

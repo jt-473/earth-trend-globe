@@ -3,6 +3,7 @@ import TrendChart from './TrendChart.jsx'
 import Sparkline from './Sparkline.jsx'
 import { buildVerdict, directionWord } from '../lib/verdict.js'
 import { fmt, fmtSigned, fmtP, fmtCoords } from '../lib/format.js'
+import { yearsToSignificance, zFromP } from '../lib/stats.js'
 
 function Section({ title, children, right }) {
   return (
@@ -31,6 +32,7 @@ export default function SidePanel({
   onClose,
   onOpenSignificance,
   onSwitchVariable,
+  regionMix = null,
   className = '',
 }) {
   const [deseasonalised, setDeseasonalised] = useState(true)
@@ -44,6 +46,17 @@ export default function SidePanel({
   const latestDate = series ? series.dates[series.dates.length - 1] : null
   const others = (variables || []).filter((v) => v.id !== varDef.id)
 
+  // A trend that isn't significant yet can still become significant with more data.
+  let notYet = null
+  if (!cell.significant && series && cell.slope_per_decade !== 0) {
+    const extra = yearsToSignificance(zFromP(cell.p_value), series.years_of_data)
+    if (extra !== null && extra <= 60) {
+      notYet = `Not significant yet. If it keeps changing at this pace, about ${Math.max(1, Math.round(extra))} more years of data could be enough to show it's real.`
+    } else if (extra !== null) {
+      notYet = 'At this pace it would take more than 60 more years of data to show a real trend, so this is most likely natural ups and downs.'
+    }
+  }
+
   return (
     <aside
       className={`glass pointer-events-auto flex h-full flex-col overflow-hidden ${className}`}
@@ -54,7 +67,9 @@ export default function SidePanel({
         <div>
           <div className="text-muted">{region.type || 'Selected place'}</div>
           <h2 className="text-xl font-semibold leading-tight">{region.name}</h2>
-          <div className="mono mt-1 text-muted">{fmtCoords(cell.lat, cell.lon)} · 2° area</div>
+          <div className="mono mt-1 text-muted">
+            {cell.isRegion ? `Region · average of ${cell.cellCount} grid points` : `${fmtCoords(cell.lat, cell.lon)} · 2° area`}
+          </div>
         </div>
         <button type="button" className="btn btn-quiet h-9 w-9 justify-center px-0" onClick={onClose} aria-label="Close panel">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -90,11 +105,12 @@ export default function SidePanel({
                 What does significant mean?
               </button>
             </p>
+            {notYet && <p className="mt-2 border-t border-slate-400/15 pt-2">{notYet}</p>}
           </div>
         </Section>
 
         <Section
-          title={`Monthly values since ${trends.start_year}`}
+          title={`Monthly values since ${series && series.start_year ? series.start_year : trends.start_year}`}
           right={
             <label className="flex cursor-pointer items-center gap-2 text-muted select-none">
               <input
@@ -112,6 +128,17 @@ export default function SidePanel({
             <span className="font-semibold text-rising">If this trend continues…</span> the dotted line extends the measured trend to 2040. It is a
             straight-line extension, not a climate forecast, and the band widens because the further ahead we look, the less certain we are.
           </p>
+          {cell.isRegion && (
+            <p className="mt-2 text-muted">
+              Every month is the average of {cell.cellCount} grid points inside the outlined area, each weighted by the ground it covers.
+            </p>
+          )}
+          {cell.isRegion && regionMix && regionMix.upShare >= 0.1 && regionMix.downShare >= 0.1 && (
+            <p className="mt-2 rounded-xl border border-slate-400/20 bg-slate-400/5 px-3 py-2">
+              Inside this area the trend goes both ways: a significant rise over {Math.round(regionMix.upShare * 100)}% of it and a significant fall over{' '}
+              {Math.round(regionMix.downShare * 100)}%. An average can hide changes that pull in opposite directions, so look at the colours on the globe too.
+            </p>
+          )}
           {series && series.source === 'synthetic' && (
             <p className="mt-2 text-muted">Showing placeholder data generated in the browser until the real series file arrives.</p>
           )}
@@ -139,8 +166,8 @@ export default function SidePanel({
               <dd className="mono text-right">{series ? fmtP(series.mann_kendall.p_value) : '…'}</dd>
               <dt className="text-muted">Years of data</dt>
               <dd className="mono text-right">{series ? fmt(series.years_of_data, 1) : '…'} years</dd>
-              <dt className="text-muted">Grid cell</dt>
-              <dd className="mono text-right">{cell.id}</dd>
+              <dt className="text-muted">{cell.isRegion ? 'Grid points averaged' : 'Grid cell'}</dt>
+              <dd className="mono text-right">{cell.isRegion ? cell.cellCount : cell.id}</dd>
             </dl>
           )}
           {!numbersOpen && (

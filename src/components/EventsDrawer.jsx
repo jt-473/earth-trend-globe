@@ -68,7 +68,7 @@ function TrendLink({ event, variables, onShowTrend }) {
     verdict.tone === 'up' ? 'border-rising/40 bg-rising/10' : verdict.tone === 'down' ? 'border-falling/40 bg-falling/10' : 'border-slate-400/25 bg-slate-400/10'
   return (
     <div className={`rounded-2xl border p-4 ${toneCls}`}>
-      <div className="text-muted">{TREND_QUESTION[event.category] || `${varDef.name} here since 1980`}</div>
+      <div className="text-muted">{TREND_QUESTION[event.category] || `${varDef.name} here since 1981`}</div>
       <div className="mt-1 font-semibold">
         {varDef.name}: {verdict.badge}
       </div>

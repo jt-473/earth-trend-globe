@@ -13,9 +13,11 @@ import DemoOverlay from './components/DemoOverlay.jsx'
 import MapControls from './components/MapControls.jsx'
 import NewsTicker from './components/NewsTicker.jsx'
 import EventsDrawer from './components/EventsDrawer.jsx'
+import DataDetective from './components/DataDetective.jsx'
 import { useNasaEvents } from './hooks/useNasaEvents.js'
+import { quickStats } from './lib/explore.js'
 import { DEFAULT_MAP_STYLE, MAP_STYLES } from './lib/mapStyles.js'
-import { loadVariables, loadRegions, loadDemos, loadTrends, loadSeries, findRegion } from './lib/data.js'
+import { loadVariables, loadRegions, loadDemos, loadTrends, loadSeries, loadRegionSeries, findRegion } from './lib/data.js'
 import { nearestCell } from './lib/cells.js'
 import { useSerialController } from './hooks/useSerialController.js'
 
@@ -58,6 +60,10 @@ export default function App() {
   const [showHow, setShowHow] = useState(false)
   const [showSig, setShowSig] = useState(false)
   const [demo, setDemo] = useState(null) // { demo, step }
+  const [showDetective, setShowDetective] = useState(false)
+  const [selRegion, setSelRegion] = useState(null) // a place from the catalogue, or a drawn box
+  const [regionData, setRegionData] = useState(null) // { series, record } | { error }
+  const [draw, setDraw] = useState(null) // { start: {lat, lon} | null } while drawing an area
   const [autoRotate, setAutoRotate] = useState(true)
   const [globeReady, setGlobeReady] = useState(false)
   const [mapStyle, setMapStyle] = useState(() => {
@@ -87,7 +93,8 @@ export default function App() {
   const globeApi = useRef(null)
 
   const varDef = useMemo(() => (variables ? variables.find((v) => v.id === variableId) : null), [variables, variableId])
-  const selected = useMemo(() => (trends && selectedId ? trends.byId.get(selectedId) || null : null), [trends, selectedId])
+  const selectedCellRecord = useMemo(() => (trends && selectedId ? trends.byId.get(selectedId) || null : null), [trends, selectedId])
+  const selected = selRegion ? (regionData && regionData.record) || null : selectedCellRecord
   const endYear = trends ? trends.end_year : new Date().getFullYear()
   const projected = year !== null && year > endYear
 
@@ -119,6 +126,7 @@ export default function App() {
 
   // ---- Time series for the selected square --------------------------------
   useEffect(() => {
+    if (selRegion) return // regions are handled below
     if (!selected || !trends || !variables) {
       setSeries(null)
       return
@@ -145,7 +153,39 @@ export default function App() {
     return () => {
       alive = false
     }
-  }, [selected, trends, variableId, variables])
+  }, [selected, trends, variableId, variables, selRegion])
+
+  // ---- Region: every month averaged over the cells in the box -------------
+  useEffect(() => {
+    if (!selRegion || !variables) {
+      setRegionData(null)
+      return
+    }
+    let alive = true
+    setRegionData(null)
+    setSeries(null)
+    setOtherSeries({})
+    loadRegionSeries(variableId, selRegion)
+      .then((r) => {
+        if (!alive) return
+        if (!r) {
+          setRegionData({ error: 'There is not enough monthly data to analyse this area.' })
+          return
+        }
+        setRegionData(r)
+        setSeries(r.series)
+      })
+      .catch(() => alive && setRegionData({ error: 'Could not load the monthly data for this area.' }))
+    for (const v of variables) {
+      if (v.id === variableId) continue
+      loadRegionSeries(v.id, selRegion)
+        .then((r) => alive && r && setOtherSeries((o) => ({ ...o, [v.id]: r.series })))
+        .catch(() => {})
+    }
+    return () => {
+      alive = false
+    }
+  }, [selRegion, variableId, variables])
 
   // ---- Play button --------------------------------------------------------
   useEffect(() => {
@@ -176,30 +216,98 @@ export default function App() {
   // ---- Selection ----------------------------------------------------------
   // Fly so the spot sits in the part of the screen a panel doesn't cover: above the
   // bottom sheet on phones, left of the right-hand panel on wider screens.
-  const flyToPoint = useCallback((lat, lon) => {
+  const flyToPoint = useCallback((lat, lon, altitude = 1.05) => {
     if (!globeApi.current) return
     const mobile = window.innerWidth < 1024
     if (mobile) {
-      globeApi.current.flyTo(lat - 10, lon, 1.4, 900)
+      globeApi.current.flyTo(lat - 10 * altitude, lon, altitude + 0.35, 900)
       return
     }
-    const shift = Math.min(30, 9 / Math.max(0.3, Math.cos((lat * Math.PI) / 180)))
-    globeApi.current.flyTo(lat, lon + shift, 1.05, 900)
+    const shift = Math.min(40, (9 * altitude) / Math.max(0.3, Math.cos((lat * Math.PI) / 180)))
+    globeApi.current.flyTo(lat, lon + shift, altitude, 900)
   }, [])
 
   const selectCell = useCallback((record, fly = true) => {
     setEventsOpen(false)
     setSelectedEventId(null)
+    setSelRegion(null)
     setSelectedId(record.id)
     setAutoRotate(false)
     if (fly) flyToPoint(record.lat, record.lon)
   }, [flyToPoint])
 
-  const closePanel = useCallback(() => setSelectedId(null), [])
+  const closePanel = useCallback(() => {
+    setSelectedId(null)
+    setSelRegion(null)
+  }, [])
+
+  // Open the full analysis for a region (from the data detective or a drawn box).
+  const analyseRegion = useCallback(
+    (item, varId) => {
+      setShowDetective(false)
+      setDraw(null)
+      setEventsOpen(false)
+      setSelectedEventId(null)
+      setSelectedId(null)
+      setAutoRotate(false)
+      if (varId) setVariableId(varId)
+      setSelRegion(item)
+      const [lonMin, latMin, lonMax, latMax] = item.bbox
+      const lonSpan = lonMin <= lonMax ? lonMax - lonMin : lonMax + 360 - lonMin
+      let lon = lonMin + lonSpan / 2
+      if (lon >= 180) lon -= 360
+      const lat = Math.max(-75, Math.min(75, (latMin + latMax) / 2))
+      const size = Math.max(latMax - latMin, lonSpan * Math.cos((lat * Math.PI) / 180))
+      flyToPoint(lat, lon, Math.max(0.9, Math.min(2.6, 0.7 + size / 35)))
+    },
+    [flyToPoint],
+  )
+
+  const startDraw = useCallback((varId) => {
+    setShowDetective(false)
+    if (varId) setVariableId(varId)
+    setSelectedId(null)
+    setSelRegion(null)
+    setEventsOpen(false)
+    setAutoRotate(false)
+    setDraw({ start: null })
+  }, [])
+
+  const onDrawClick = useCallback(
+    (lat, lon) => {
+      if (!draw) return
+      if (!draw.start) {
+        setDraw({ start: { lat, lon } })
+        return
+      }
+      const a = draw.start
+      const latMin = Math.round(Math.min(a.lat, lat))
+      const latMax = Math.round(Math.max(a.lat, lat))
+      // Take the shorter way round between the two corners.
+      let lonMin = Math.min(a.lon, lon)
+      let lonMax = Math.max(a.lon, lon)
+      if (lonMax - lonMin > 180) [lonMin, lonMax] = [lonMax, lonMin]
+      const box = [Math.round(lonMin), latMin, Math.round(lonMax), latMax]
+      const fmtLat = (v) => `${Math.abs(v)}°${v >= 0 ? 'N' : 'S'}`
+      const fmtLon = (v) => `${Math.abs(v)}°${v >= 0 ? 'E' : 'W'}`
+      analyseRegion(
+        {
+          id: `custom:${box.join('_')}`,
+          name: 'Your area',
+          type: `${fmtLat(latMin)} to ${fmtLat(latMax)}, ${fmtLon(box[0])} to ${fmtLon(box[2])}`,
+          kind: 'custom',
+          bbox: box,
+        },
+        null,
+      )
+    },
+    [draw, analyseRegion],
+  )
 
   const openEvent = useCallback(
     (e) => {
       setSelectedId(null)
+      setSelRegion(null)
       setEventsOpen(true)
       setAutoRotate(false)
       if (!e) {
@@ -221,6 +329,7 @@ export default function App() {
     (e, varId, cellId) => {
       setEventsOpen(false)
       setSelectedEventId(null)
+      setSelRegion(null)
       setVariableId(varId)
       setSelectedId(cellId)
       setAutoRotate(false)
@@ -271,6 +380,7 @@ export default function App() {
     setVariableId(step.variable)
     setYear(step.year)
     const snapped = nearestCell(step.lat, step.lon)
+    setSelRegion(null)
     setSelectedId(snapped.id)
     setAutoRotate(false)
     if (globeApi.current) globeApi.current.flyTo(snapped.lat, snapped.lon, window.innerWidth < 1024 ? 1.5 : 1.15, 1100)
@@ -286,8 +396,10 @@ export default function App() {
       } else if (e.key === ']') cycleVariable(1)
       else if (e.key === '[') cycleVariable(-1)
       else if (e.key === 'Escape') {
-        if (showHow || showSig) return // modals handle their own Escape
-        if (demo) setDemo(null)
+        if (showHow || showSig || showDetective) return // modals handle their own Escape
+        if (draw) setDraw(null)
+        else if (demo) setDemo(null)
+        else if (selRegion) setSelRegion(null)
         else if (selectedId) setSelectedId(null)
         else if (eventsOpen) {
           if (selectedEventId) setSelectedEventId(null)
@@ -297,10 +409,17 @@ export default function App() {
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [cycleVariable, demo, selectedId, showHow, showSig, eventsOpen, selectedEventId])
+  }, [cycleVariable, demo, selectedId, showHow, showSig, eventsOpen, selectedEventId, draw, selRegion])
 
   const hoverRegion = useMemo(() => (hoverCell ? findRegion(hoverCell.lat, hoverCell.lon, regions) : null), [hoverCell, regions])
-  const selectedRegion = useMemo(() => (selected ? findRegion(selected.lat, selected.lon, regions) : null), [selected, regions])
+  const regionMix = useMemo(
+    () => (selRegion && trends && trends.variableId === variableId ? quickStats(trends, selRegion.bbox) : null),
+    [selRegion, trends, variableId],
+  )
+  const selectedRegion = useMemo(() => {
+    if (selRegion) return { name: selRegion.name, type: selRegion.type }
+    return selected ? findRegion(selected.lat, selected.lon, regions) : null
+  }, [selected, regions, selRegion])
 
   const ready = globeReady && !!trends && !!varDef && year !== null
   const panelOpen = !!selected
@@ -324,6 +443,10 @@ export default function App() {
         events={showEvents && !showIntro && !demo ? feed.events : null}
         selectedEventId={drawerOpen ? selectedEventId : null}
         onSelectEvent={openEvent}
+        regionBox={selRegion ? selRegion.bbox : null}
+        drawMode={!!draw}
+        drawStart={draw ? draw.start : null}
+        onDrawClick={onDrawClick}
         autoRotate={autoRotate}
         mapStyle={mapStyle}
         dataOpacity={dataOpacity}
@@ -355,12 +478,38 @@ export default function App() {
           variableId={variableId}
           onChangeVariable={setVariableId}
           onHowItWorks={() => setShowHow(true)}
+          onInvestigate={() => setShowDetective(true)}
           serial={serial}
           onToggleSerial={() => (serial.status === 'connected' ? serial.disconnect() : serial.connect())}
         />
       )}
 
-      {showTicker && (
+      {draw && (
+        <div className="pointer-events-none absolute inset-x-4 top-[72px] z-30 flex justify-center lg:top-[76px]">
+          <div className="glass pointer-events-auto flex items-center gap-3 px-4 py-2" role="status">
+            <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-accent shadow-[0_0_10px_#22d3ee]" aria-hidden="true" />
+            <span>{draw.start ? 'Now click the opposite corner of your area.' : 'Click one corner of the area you want to investigate.'}</span>
+            <button type="button" className="btn btn-ghost h-8 px-3" onClick={() => setDraw(null)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+      {selRegion && !regionData && (
+        <div className="glass pointer-events-none absolute bottom-28 left-1/2 z-30 -translate-x-1/2 px-4 py-2" role="status">
+          Working out the trend for {selRegion.name}…
+        </div>
+      )}
+      {selRegion && regionData && regionData.error && (
+        <div className="glass absolute bottom-28 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 px-4 py-2" role="alert">
+          {regionData.error}
+          <button type="button" className="btn btn-ghost h-8 px-3" onClick={() => setSelRegion(null)}>
+            OK
+          </button>
+        </div>
+      )}
+
+      {showTicker && !draw && (
         <div
           className={`pointer-events-none absolute inset-x-4 top-[72px] z-10 flex justify-center lg:top-[76px] ${
             rightOpen ? 'lg:right-[452px]' : ''
@@ -396,7 +545,7 @@ export default function App() {
             onChangeEvents={setShowEvents}
             className="hidden w-[300px] lg:block"
           />
-          <Legend varDef={varDef} year={year ?? endYear} startYear={trends ? trends.start_year : 1980} />
+          <Legend varDef={varDef} year={year ?? endYear} startYear={trends ? trends.start_year : 1981} />
         </div>
       )}
 
@@ -442,6 +591,7 @@ export default function App() {
             onClose={closePanel}
             onOpenSignificance={() => setShowSig(true)}
             onSwitchVariable={setVariableId}
+            regionMix={regionMix}
             className="rounded-b-none lg:rounded-b-[18px]"
           />
         </div>
@@ -473,6 +623,16 @@ export default function App() {
       )}
 
       {showHow && <HowItWorks onClose={() => setShowHow(false)} variables={variables} />}
+      {showDetective && (
+        <DataDetective
+          variables={variables}
+          regionsFile={regions}
+          initialVariable={variableId}
+          onClose={() => setShowDetective(false)}
+          onAnalyse={analyseRegion}
+          onDraw={startDraw}
+        />
+      )}
       {showSig && <SignificanceExplainer onClose={() => setShowSig(false)} />}
 
       {serial.error && (

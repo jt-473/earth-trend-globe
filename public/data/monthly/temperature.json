@@ -1,0 +1,1 @@
+{"variable":"temperature","source":"MERRA-2 (via NASA POWER), air temperature at 2 m","start_year":1981,"start_month":1,"months":540,"scale":0.01,"decimals":2,"nodata":-32768,"n_lat":89,"n_lon":180,"rows_per_band":9,"bands":10}

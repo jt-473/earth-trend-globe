@@ -3,52 +3,163 @@
     {
       "id": "arctic",
       "title": "Why is the Arctic warming fastest?",
-      "pin": { "lat": 74, "lon": 60 },
+      "pin": {
+        "lat": 74,
+        "lon": 60
+      },
       "steps": [
-        { "lat": 74, "lon": 60, "variable": "temperature", "year": 2026, "caption": "Start in the Arctic Ocean north of Siberia. The deep red tells us this spot has warmed faster than almost anywhere else since 1980. Scientists call this Arctic amplification." },
-        { "lat": 74, "lon": 60, "variable": "temperature", "year": 1990, "caption": "Slide back to 1990 and the colours almost vanish. Only ten years of change had built up by then, so the globe is nearly neutral." },
-        { "lat": 74, "lon": 60, "variable": "temperature", "year": 2040, "caption": "Now jump to 2040. The dotted line continues the trend, and the globe gets a haze to remind you this is a projection, not a measurement." },
-        { "lat": 2, "lon": -140, "variable": "temperature", "year": 2026, "caption": "Compare with the tropical Pacific. The change here is smaller and the colours softer, even though it is the same variable and the same 46 years." }
+        {
+          "lat": 74,
+          "lon": 60,
+          "variable": "temperature",
+          "year": 2025,
+          "caption": "Start in the Arctic Ocean north of Siberia. The deep red tells us this spot has warmed faster than almost anywhere else since 1981. Scientists call this Arctic amplification."
+        },
+        {
+          "lat": 74,
+          "lon": 60,
+          "variable": "temperature",
+          "year": 1990,
+          "caption": "Slide back to 1990 and the colours almost vanish. Only nine years of change had built up by then, so the globe is nearly neutral."
+        },
+        {
+          "lat": 74,
+          "lon": 60,
+          "variable": "temperature",
+          "year": 2040,
+          "caption": "Now jump to 2040. The dotted line continues the trend, and the screen edges glow orange to remind you this is a projection, not a measurement."
+        },
+        {
+          "lat": 2,
+          "lon": -140,
+          "variable": "temperature",
+          "year": 2025,
+          "caption": "Compare with the tropical Pacific. The change here is smaller and the colours softer, even though it is the same variable and the same 45 years."
+        }
       ]
     },
     {
       "id": "sahel",
       "title": "Is the Sahel getting wetter again?",
-      "pin": { "lat": 14, "lon": 2 },
+      "pin": {
+        "lat": 16,
+        "lon": -12
+      },
       "steps": [
-        { "lat": 14, "lon": 2, "variable": "rainfall", "year": 2026, "caption": "The Sahel is the strip of grassland south of the Sahara. After terrible droughts in the 1970s and 80s, rainfall here has partly recovered since 1980." },
-        { "lat": 14, "lon": 2, "variable": "rainfall", "year": 2026, "caption": "Look at the graph in the panel. The thin line jumps around every year, which is why one wet or dry year never proves a trend. The trend line and its shaded band are what matter." },
-        { "lat": 38, "lon": 14, "variable": "rainfall", "year": 2026, "caption": "Fly north to the Mediterranean and the sign flips to blue: slowly drying. Rain is moving around the planet, not just going up or down everywhere." }
+        {
+          "lat": 16,
+          "lon": -12,
+          "variable": "rainfall",
+          "year": 2025,
+          "caption": "The Sahel is the strip of grassland south of the Sahara. After terrible droughts in the 1970s and 80s, rainfall here has partly recovered since 1981."
+        },
+        {
+          "lat": 16,
+          "lon": -12,
+          "variable": "rainfall",
+          "year": 2025,
+          "caption": "Look at the graph in the panel. The thin line jumps around every year, which is why one wet or dry year never proves a trend. The trend line and its shaded band are what matter."
+        },
+        {
+          "lat": 38,
+          "lon": 18,
+          "variable": "rainfall",
+          "year": 2025,
+          "caption": "Fly north to the Mediterranean, between Italy and Greece, and the sign flips to blue: rain here is slowly falling. Rain is moving around the planet, not just going up or down everywhere."
+        }
       ]
     },
     {
       "id": "haze",
       "title": "Where did the haze go, and where did it come from?",
-      "pin": { "lat": 26, "lon": 80 },
+      "pin": {
+        "lat": 26,
+        "lon": 80
+      },
       "steps": [
-        { "lat": 26, "lon": 80, "variable": "air_pollution", "year": 2026, "caption": "Over the Indo-Gangetic Plain, aerosol optical depth, a measure of how hazy the air is, has risen strongly since 1980 as cities and industry grew." },
-        { "lat": 50, "lon": 10, "variable": "air_pollution", "year": 2026, "caption": "Western Europe shows the opposite. Clean-air laws from the 1980s onward cut sulphur and smoke, and the air got clearer. Blue here is good news." },
-        { "lat": 50, "lon": 10, "variable": "sunlight", "year": 2026, "caption": "Switch to sunlight at the same spot. Clearer air lets more of the sun's energy reach the ground, a phenomenon called brightening. Two variables, one story." }
+        {
+          "lat": 26,
+          "lon": 80,
+          "variable": "air_pollution",
+          "year": 2025,
+          "caption": "Over the Indo-Gangetic Plain, aerosol optical depth, a measure of how hazy the air is, has risen strongly since 2001, when this record begins, as cities and industry grew."
+        },
+        {
+          "lat": 50,
+          "lon": 10,
+          "variable": "air_pollution",
+          "year": 2025,
+          "caption": "Western Europe shows the opposite. Clean-air laws cut sulphur and smoke, and the air has kept getting clearer since 2001. Blue here is good news."
+        },
+        {
+          "lat": 50,
+          "lon": 10,
+          "variable": "sunlight",
+          "year": 2025,
+          "caption": "Switch to sunlight at the same spot. Clearer air lets more of the sun's energy reach the ground, a phenomenon called brightening. Two variables, one story."
+        }
       ]
     },
     {
       "id": "ozone",
       "title": "Is the ozone layer healing?",
-      "pin": { "lat": -74, "lon": 0 },
+      "pin": {
+        "lat": -74,
+        "lon": 0
+      },
       "steps": [
-        { "lat": -74, "lon": 0, "variable": "ozone", "year": 2026, "caption": "Antarctica is where the ozone hole appears every spring. Ozone is measured in Dobson units: the thickness the layer would have if squashed down to the ground." },
-        { "lat": -74, "lon": 0, "variable": "ozone", "year": 2026, "caption": "The badge tells you whether the change is real or could be random. Ozone swings a lot from year to year, so even large changes can fail the significance test." },
-        { "lat": -74, "lon": 0, "variable": "ozone", "year": 2040, "caption": "The projection simply extends the straight line. Real ozone recovery depends on the Montreal Protocol and chemistry, so treat this line as a question, not an answer." }
+        {
+          "lat": -74,
+          "lon": 0,
+          "variable": "ozone",
+          "year": 2025,
+          "caption": "Antarctica is where the ozone hole appears every spring. Ozone is measured in Dobson units: the thickness the layer would have if squashed down to the ground."
+        },
+        {
+          "lat": -74,
+          "lon": 0,
+          "variable": "ozone",
+          "year": 2025,
+          "caption": "The badge tells you whether the change is real or could be random. Ozone swings a lot from year to year, so even large changes can fail the significance test."
+        },
+        {
+          "lat": -74,
+          "lon": 0,
+          "variable": "ozone",
+          "year": 2040,
+          "caption": "The projection simply extends the straight line. Real ozone recovery depends on the Montreal Protocol and chemistry, so treat this line as a question, not an answer."
+        }
       ]
     },
     {
       "id": "significant",
       "title": "What does significant actually mean?",
-      "pin": { "lat": -20, "lon": -110 },
+      "pin": {
+        "lat": -20,
+        "lon": -110
+      },
       "steps": [
-        { "lat": -20, "lon": -110, "variable": "humidity", "year": 2026, "caption": "Pale, see-through areas are places where the trend is not statistically significant. The numbers still show a slope, but it is small compared with the year-to-year noise." },
-        { "lat": -20, "lon": -110, "variable": "humidity", "year": 2026, "caption": "Open the Numbers section. A p-value above 0.05 means that if nothing were really changing, we would still see a slope this big more than one time in twenty." },
-        { "lat": 8, "lon": 100, "variable": "humidity", "year": 2026, "caption": "Fly to Southeast Asia. Warmer air holds more water vapour, so humidity here has risen clearly, and the colour is strong rather than pale." }
+        {
+          "lat": -20,
+          "lon": -110,
+          "variable": "humidity",
+          "year": 2025,
+          "caption": "Pale, see-through areas are places where the trend is not statistically significant. The numbers still show a slope, but it is small compared with the year-to-year noise."
+        },
+        {
+          "lat": -20,
+          "lon": -110,
+          "variable": "humidity",
+          "year": 2025,
+          "caption": "Open the Numbers section. A p-value above 0.05 means that if nothing were really changing, we would still see a slope this big more than one time in twenty."
+        },
+        {
+          "lat": 8,
+          "lon": 100,
+          "variable": "humidity",
+          "year": 2025,
+          "caption": "Fly to Southeast Asia. Warmer air holds more water vapour, so humidity here has risen clearly, and the colour is strong rather than pale."
+        }
       ]
     }
   ]

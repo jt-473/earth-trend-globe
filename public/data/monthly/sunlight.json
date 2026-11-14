@@ -1,0 +1,1 @@
+{"variable":"sunlight","source":"NASA GEWEX SRB and CERES (via NASA POWER), all-sky surface shortwave","start_year":1981,"start_month":1,"months":540,"scale":0.1,"decimals":1,"nodata":-32768,"n_lat":89,"n_lon":180,"rows_per_band":9,"bands":10}

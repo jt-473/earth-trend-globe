@@ -1,7 +1,8 @@
-// Generates fake trend grids (and a few time series) in exactly the format the
-// data team will deliver. Run with: npm run generate-data
+// Generates PLACEHOLDER trend grids (and a few time series) in the brief's format.
+// The real data comes from scripts/fetch-nasa-power.mjs and scripts/build-real-data.mjs.
+// Run with: npm run generate-fake-data -- --force
 //   --all-series   also write a series file for every cell (large: ~100k files)
-import { mkdirSync, writeFileSync, readFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { allCellCentres, cellId } from '../src/lib/cells.js'
@@ -9,6 +10,14 @@ import { hashString, mulberry32, synthesiseSeries, twoSidedP } from '../src/lib/
 
 const here = dirname(fileURLToPath(import.meta.url))
 const dataDir = join(here, '..', 'public', 'data')
+
+// Real NASA data lives in public/data/monthly. Never overwrite it with placeholders by accident.
+if (existsSync(join(dataDir, 'monthly')) && !process.argv.includes('--force')) {
+  console.error('public/data already holds real NASA data (public/data/monthly exists).')
+  console.error('Placeholder data would overwrite the real trends. Use --force if you really mean it,')
+  console.error('or run `npm run build-data` to rebuild the real data instead.')
+  process.exit(1)
+}
 const START_YEAR = 1980
 const now = new Date()
 const END_YEAR = now.getFullYear()

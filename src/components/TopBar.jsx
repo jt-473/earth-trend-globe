@@ -1,14 +1,15 @@
-export default function TopBar({ variables, variableId, onChangeVariable, onHowItWorks, serial, onToggleSerial }) {
+export default function TopBar({ variables, variableId, onChangeVariable, onHowItWorks, onInvestigate, serial, onToggleSerial }) {
   const status = serial.status
   const serialLabel =
     status === 'connected' ? 'Controller connected' : status === 'connecting' ? 'Connecting…' : status === 'unsupported' ? 'Controller (Chrome only)' : 'Connect controller'
   return (
     <header className="pointer-events-auto absolute inset-x-0 top-0 z-20 flex items-center gap-3 px-4 py-3 md:px-6">
-      <div className="glass flex shrink-0 items-center gap-3 px-3 py-2 md:px-4">
+      {/* On phones the title gives way to the variable menu; the intro screen names the app. */}
+      <div className="glass hidden shrink-0 items-center gap-3 px-3 py-2 sm:flex md:px-4">
         <span className="hidden h-2.5 w-2.5 rounded-full bg-accent shadow-[0_0_12px_#22d3ee] sm:inline-block" aria-hidden="true" />
         <div className="leading-tight">
           <div className="whitespace-nowrap font-semibold">Earth Trend Globe</div>
-          <div className="hidden text-muted sm:block">NASA MERRA-2 · 1980 to 2040</div>
+          <div className="hidden text-muted sm:block">NASA data · 1981 to 2040</div>
         </div>
       </div>
 
@@ -32,6 +33,13 @@ export default function TopBar({ variables, variableId, onChangeVariable, onHowI
       </div>
 
       <div className="ml-auto flex shrink-0 items-center gap-2">
+        <button type="button" className="btn btn-primary" onClick={onInvestigate} aria-label="Investigate: find places where something is changing">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M20 20l-4-4" />
+          </svg>
+          <span className="hidden md:inline">Investigate</span>
+        </button>
         <button type="button" className="btn btn-ghost glass hidden sm:inline-flex" onClick={onHowItWorks}>
           How it works
         </button>
@@ -40,7 +48,7 @@ export default function TopBar({ variables, variableId, onChangeVariable, onHowI
         </button>
         <button
           type="button"
-          className={`btn glass ${status === 'connected' ? 'btn-primary' : 'btn-ghost'}`}
+          className={`btn glass hidden sm:inline-flex ${status === 'connected' ? 'btn-primary' : 'btn-ghost'}`}
           onClick={onToggleSerial}
           aria-label={serialLabel}
           disabled={status === 'unsupported' || status === 'connecting'}
