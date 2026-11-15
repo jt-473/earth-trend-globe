@@ -10,7 +10,8 @@
     "fetch-data": "node scripts/fetch-nasa-power.mjs",
     "build-data": "node scripts/build-real-data.mjs",
     "generate-fake-data": "node scripts/generate-fake-data.mjs",
-    "build-outlook": "node scripts/build-outlook.mjs"
+    "build-outlook": "node scripts/build-outlook.mjs",
+    "update-data": "node scripts/update-data.mjs"
   },
   "dependencies": {
     "plotly.js-basic-dist-min": "^4.3.0",
