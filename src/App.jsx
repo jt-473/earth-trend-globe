@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import StarField from './components/StarField.jsx'
 import GlobeView from './components/GlobeView.jsx'
 import TopBar from './components/TopBar.jsx'
-import Legend from './components/Legend.jsx'
+import Legend, { LegendStrip } from './components/Legend.jsx'
 import TimeSlider from './components/TimeSlider.jsx'
 import SidePanel from './components/SidePanel.jsx'
 import Tooltip from './components/Tooltip.jsx'
@@ -63,6 +63,9 @@ export default function App() {
   const [demo, setDemo] = useState(null) // { demo, step }
   const [showDetective, setShowDetective] = useState(false)
   const [showOutlook, setShowOutlook] = useState(false)
+  // Phones and tablets only: map controls folded into a button, and the bottom sheet's height.
+  const [mobileMapOpen, setMobileMapOpen] = useState(false)
+  const [sheetFull, setSheetFull] = useState(false)
   const [selRegion, setSelRegion] = useState(null) // a place from the catalogue, or a drawn box
   const [regionData, setRegionData] = useState(null) // { series, record } | { error }
   const [draw, setDraw] = useState(null) // { start: {lat, lon} | null } while drawing an area
@@ -222,7 +225,22 @@ export default function App() {
     if (!globeApi.current) return
     const mobile = window.innerWidth < 1024
     if (mobile) {
-      globeApi.current.flyTo(lat - 10 * altitude, lon, altitude + 0.35, 900)
+      // Put the point in the middle of the strip of globe left between the top bar and the
+      // bottom sheet (which covers the lower 56% of the screen). Tilt the camera south by the
+      // angle that moves the point up that many pixels (perspective camera, 50° field of view).
+      const h = window.innerHeight
+      const alt = altitude + 0.35
+      const dy = h / 2 - (130 + h * 0.44) / 2
+      const f = h / 2 / Math.tan((25 * Math.PI) / 180)
+      const d = 1 + alt
+      let lo = 0
+      let hi = Math.PI / 3
+      for (let i = 0; i < 30; i++) {
+        const mid = (lo + hi) / 2
+        if ((f * Math.sin(mid)) / (d - Math.cos(mid)) < dy) lo = mid
+        else hi = mid
+      }
+      globeApi.current.flyTo(Math.max(-89, lat - (lo * 180) / Math.PI), lon, alt, 900)
       return
     }
     const shift = Math.min(40, (9 * altitude) / Math.max(0.3, Math.cos((lat * Math.PI) / 180)))
@@ -428,6 +446,10 @@ export default function App() {
   const drawerOpen = eventsOpen && !panelOpen && !showIntro && !demo
   const rightOpen = panelOpen || drawerOpen
   const showTicker = !showIntro && !demo && showEvents
+  // A new panel or list always opens at its normal height on phones.
+  useEffect(() => {
+    if (!rightOpen) setSheetFull(false)
+  }, [rightOpen])
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-space text-ink">
@@ -516,7 +538,7 @@ export default function App() {
         <div
           className={`pointer-events-none absolute inset-x-4 top-[72px] z-10 flex justify-center lg:top-[76px] ${
             rightOpen ? 'lg:right-[452px]' : ''
-          }`}
+          } ${sheetFull ? 'max-lg:hidden' : ''}`}
         >
           <NewsTicker feed={feed} onOpenEvent={openEvent} onOpenAll={openAllEvents} className="w-full max-w-[640px]" />
         </div>
@@ -536,7 +558,7 @@ export default function App() {
       )}
 
       {!showIntro && varDef && (
-        <div className={`pointer-events-none absolute left-4 z-10 flex flex-col gap-3 ${rightOpen ? 'hidden xl:flex' : ''} bottom-[132px] lg:bottom-4`}>
+        <div className={`pointer-events-none absolute left-4 z-10 flex flex-col gap-3 max-lg:hidden ${rightOpen ? 'hidden xl:flex' : ''} bottom-[132px] lg:bottom-4`}>
           <MapControls
             mapStyle={mapStyle}
             onChangeStyle={setMapStyle}
@@ -552,27 +574,49 @@ export default function App() {
         </div>
       )}
 
-      {/* Phones and tablets: map controls sit under the top bar */}
+      {/* Phones and tablets: map controls fold into a button under the top bar so the globe stays visible */}
       {!showIntro && !demo && !rightOpen && (
-        <div className={`pointer-events-none absolute left-4 right-4 z-10 lg:hidden ${showTicker ? 'top-[128px]' : 'top-[72px]'}`}>
-          <MapControls
-            mapStyle={mapStyle}
-            onChangeStyle={setMapStyle}
-            dataOpacity={dataOpacity}
-            onChangeOpacity={setDataOpacity}
-            showLabels={showLabels}
-            onChangeLabels={setShowLabels}
-            showEvents={showEvents}
-            onChangeEvents={setShowEvents}
-            className="mx-auto max-w-[400px]"
-          />
+        <div className={`pointer-events-none absolute left-4 right-4 z-10 flex flex-col items-end gap-2 lg:hidden ${showTicker ? 'top-[128px]' : 'top-[72px]'}`}>
+          <button
+            type="button"
+            className="btn btn-ghost glass pointer-events-auto h-10 px-3"
+            onClick={() => setMobileMapOpen((o) => !o)}
+            aria-expanded={mobileMapOpen}
+            aria-label={mobileMapOpen ? 'Hide map settings' : 'Show map settings'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3l9 5-9 5-9-5 9-5z" />
+              <path d="M3 13l9 5 9-5" />
+            </svg>
+            <span>{mobileMapOpen ? 'Done' : 'Map'}</span>
+          </button>
+          {mobileMapOpen && (
+            <MapControls
+              mapStyle={mapStyle}
+              onChangeStyle={setMapStyle}
+              dataOpacity={dataOpacity}
+              onChangeOpacity={setDataOpacity}
+              showLabels={showLabels}
+              onChangeLabels={setShowLabels}
+              showEvents={showEvents}
+              onChangeEvents={setShowEvents}
+              className="w-full max-w-[400px]"
+            />
+          )}
+        </div>
+      )}
+
+      {/* Phones and tablets: a slim colour key above the time slider; tap it for the details */}
+      {!showIntro && varDef && !rightOpen && (
+        <div className="pointer-events-none absolute bottom-[112px] left-4 right-4 z-10 lg:hidden">
+          <LegendStrip varDef={varDef} year={year ?? endYear} startYear={trends ? trends.start_year : 1981} />
         </div>
       )}
 
       {!showIntro && year !== null && (
         <div
           className={`pointer-events-none absolute left-4 right-4 z-10 transition-[bottom] duration-300 ${
-            rightOpen ? 'bottom-[calc(56vh+12px)] lg:bottom-4 lg:right-[452px] xl:left-[336px]' : 'bottom-4 lg:left-[336px] lg:right-4'
+            rightOpen ? 'max-lg:hidden lg:bottom-4 lg:right-[452px] xl:left-[336px]' : 'bottom-4 lg:left-[336px] lg:right-4'
           }`}
         >
           <TimeSlider year={year} endYear={endYear} playing={playing} onChange={(y) => { setPlaying(false); setYear(y) }} onTogglePlay={() => setPlaying((p) => !p)} />
@@ -580,7 +624,12 @@ export default function App() {
       )}
 
       {!showIntro && panelOpen && varDef && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[56vh] anim-slide-up lg:inset-x-auto lg:bottom-4 lg:right-4 lg:top-[76px] lg:h-auto lg:w-[436px] lg:anim-slide-right">
+        <div
+          className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 anim-slide-up transition-[height] duration-300 lg:inset-x-auto lg:bottom-4 lg:right-4 lg:top-[76px] lg:h-auto lg:w-[436px] lg:anim-slide-right ${
+            sheetFull ? 'h-[calc(100%-64px)]' : 'h-[56vh]'
+          }`}
+        >
+          <SheetHandle full={sheetFull} onToggle={() => setSheetFull((f) => !f)} />
           <SidePanel
             cell={selected}
             varDef={varDef}
@@ -601,7 +650,12 @@ export default function App() {
       )}
 
       {drawerOpen && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[56vh] anim-slide-up lg:inset-x-auto lg:bottom-4 lg:right-4 lg:top-[76px] lg:h-auto lg:w-[436px] lg:anim-slide-right">
+        <div
+          className={`pointer-events-none absolute inset-x-0 bottom-0 z-20 anim-slide-up transition-[height] duration-300 lg:inset-x-auto lg:bottom-4 lg:right-4 lg:top-[76px] lg:h-auto lg:w-[436px] lg:anim-slide-right ${
+            sheetFull ? 'h-[calc(100%-64px)]' : 'h-[56vh]'
+          }`}
+        >
+          <SheetHandle full={sheetFull} onToggle={() => setSheetFull((f) => !f)} />
           <EventsDrawer
             feed={feed}
             selected={selectedEvent}
@@ -650,5 +704,20 @@ export default function App() {
         </div>
       )}
     </div>
+  )
+}
+
+// Phones and tablets: a grab bar on top of the bottom sheet that makes it taller or shorter.
+function SheetHandle({ full, onToggle }) {
+  return (
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-label={full ? 'Make the panel smaller' : 'Make the panel bigger'}
+      aria-expanded={full}
+      className="pointer-events-auto absolute left-1/2 top-0 z-10 flex h-8 w-24 -translate-x-1/2 items-start justify-center pt-2 lg:hidden"
+    >
+      <span className="h-1.5 w-12 rounded-full bg-slate-400/60" aria-hidden="true" />
+    </button>
   )
 }

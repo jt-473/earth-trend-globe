@@ -3,7 +3,9 @@ import { MAP_STYLES } from '../lib/mapStyles.js'
 export default function IntroScreen({ onStart, onDemo, ready, mapStyle, onChangeMapStyle }) {
   return (
     <div className="anim-fade pointer-events-auto absolute inset-0 z-40 flex items-center justify-center p-6" style={{ background: "radial-gradient(ellipse at center, rgba(11,16,32,0.8) 0%, rgba(11,16,32,0.6) 40%, rgba(11,16,32,0.35) 100%)" }}>
-      <div className="max-w-xl text-center">
+      {/* Phones and tablets: darker backing so the text stays readable over the bright globe */}
+      <div className="pointer-events-none absolute inset-0 bg-[#0b1020]/55 lg:hidden" aria-hidden="true" />
+      <div className="relative max-w-xl text-center">
         <div className="mx-auto mb-5 inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-accent">
           <span className="inline-block h-2 w-2 rounded-full bg-accent shadow-[0_0_10px_#22d3ee]" aria-hidden="true" />
           NASA Space Apps · Earth science trends

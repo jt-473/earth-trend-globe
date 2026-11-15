@@ -220,7 +220,7 @@ export default function EventsDrawer({ feed, selected, regions, variables, onSel
                 >
                   <EventIcon category={e.category} size={30} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-medium">{e.headline}</span>
+                    <span className="block font-medium max-lg:line-clamp-2 lg:truncate">{e.headline}</span>
                     <span className={`block ${e.active ? 'text-emerald-300' : 'text-muted'}`}>{statusLine(e)}</span>
                   </span>
                 </button>

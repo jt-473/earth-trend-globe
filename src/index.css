@@ -367,3 +367,11 @@ select.field option { background: #0f172a; color: #e2e8f0; }
   .toggle:checked::after { transform: translateX(18px); background: #06202a; }
   .toggle:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 }
+
+/* Phones and tablets: panels sit over the globe in a small space, so make them nearly solid
+   so place names and pins behind them don't show through the text. Desktop is unchanged. */
+@layer components {
+  @media (max-width: 1023.98px) {
+    .glass { background: rgba(11, 16, 32, 0.93); }
+  }
+}
