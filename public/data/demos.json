@@ -51,7 +51,7 @@
           "lon": -12,
           "variable": "rainfall",
           "year": 2025,
-          "caption": "The Sahel is the strip of grassland south of the Sahara. After terrible droughts in the 1970s and 80s, rainfall here has partly recovered since 1981."
+          "caption": "The Sahel is the strip of grassland south of the Sahara. After terrible droughts in the 1970s and 1980s, rainfall here has partly recovered since 1981."
         },
         {
           "lat": 16,
@@ -133,7 +133,7 @@
     },
     {
       "id": "significant",
-      "title": "What does significant actually mean?",
+      "title": "What does \"significant\" actually mean?",
       "pin": {
         "lat": -20,
         "lon": -110
@@ -151,7 +151,7 @@
           "lon": -110,
           "variable": "humidity",
           "year": 2025,
-          "caption": "Open the Numbers section. A p-value above 0.05 means that if nothing were really changing, we would still see a slope this big more than one time in twenty."
+          "caption": "Open \"The numbers\" section. A p-value above 0.05 means that if nothing were really changing, we would still see a slope this big more than one time in twenty."
         },
         {
           "lat": 8,

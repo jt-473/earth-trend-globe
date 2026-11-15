@@ -1,6 +1,6 @@
 # Earth Trend Globe
 
-Interactive 3D globe for the NASA Space Apps challenge on Earth science trends.
+An interactive 3D globe for the NASA Space Apps challenge on Earth science trends.
 Spin the globe, pick a variable, click anywhere or choose a whole region to see
 how it has changed since 1981, whether the change is significant, and where it
 might go by 2040.
@@ -9,7 +9,7 @@ might go by 2040.
   GEWEX SRB and CERES for sunlight), 1981 to 2025, every 2 degrees.
 * **Be a data detective.** Answer two questions (what, and where) and get places
   ranked by how clearly they are changing, with a reason to look at each. Search
-  a place, pick a kind of place, or draw your own area on the globe.
+  for a place, pick a kind of place, or draw your own area on the globe.
 * **Regions.** Any area is averaged into one monthly record (area-weighted) and
   tested the same way as a single point. If parts of it rise and parts fall,
   the panel says so.
@@ -44,7 +44,7 @@ No backend is needed. Everything is static files under `public/data`.
 ### Refreshing the real data
 
 ```bash
-npm run fetch-data   # download NASA POWER monthly data for 16,020 points (about 2 hours)
+npm run fetch-data   # download NASA POWER monthly data for 16,020 points (several hours)
 npm run build-data   # turn it into public/data (a few seconds)
 ```
 
@@ -53,8 +53,8 @@ points it already has, so it is safe to stop and run again, and running it again
 fills any points that failed. NASA POWER is free and needs no account.
 
 Notes on the data:
-* Values are NASA POWER's native grid sampled at each 2-degree point, not
-  averages over the whole 2-degree square.
+* Values come from NASA POWER's native grid, sampled at each 2-degree point.
+  They are not averages over the whole 2-degree square.
 * Sunlight starts in 1984 and haze (aerosol optical depth) in 2001, because
   that is where those records begin.
 * Sunlight is converted from MJ/m²/day to W/m² (× 11.574).
@@ -78,7 +78,7 @@ Notes on the data:
 | `src/lib/fakeSeries.js` | Deterministic fake monthly series, shared by the browser and the generator script. Each one's fitted line equals the cell's slope in the trends file, and its noise is sized so the chart agrees with the cell's significance |
 | `src/lib/colors.js` | Red-blue diverging ramps, how see-through each trend is, and the pale "not significant" colour |
 | `src/lib/mapStyles.js` | The three map looks: satellite, night lights and street map |
-| `src/components/MapControls.jsx` | Map style switcher, trend colours slider and place names switch |
+| `src/components/MapControls.jsx` | Map style switcher, "Trend colours" slider and "Place names" switch |
 | `src/lib/events.js` | NASA EONET live events: fetch, offline copy, grouping wildfires, plain-English headlines, Worldview links |
 | `src/hooks/useNasaEvents.js` | Loads the events and refreshes them every 20 minutes |
 | `src/components/NewsTicker.jsx`, `EventsDrawer.jsx`, `EventIcon.jsx` | Headline bar, the events list and detail view, category icons |
@@ -94,11 +94,11 @@ Notes on the data:
 
 ## Data format
 
-Exactly as in the brief, so real files drop in with no code changes.
+The format is exactly as in the brief, so real files drop in with no code changes.
 
 * `public/data/trends_<variable>.json` colours the globe:
   `{ variable, units_per_decade, start_year, end_year, cells: [{ id, lat, lon, slope_per_decade, p_value, significant, direction }] }`
-  Cell ids are `c_<lat>_<lon>` on even degrees, for example `c_54_-6` covers 53 to 55 N and 7 to 5 W.
+  Cell ids are `c_<lat>_<lon>` on even degrees, for example `c_54_-6` covers 53°N to 55°N and 7°W to 5°W.
 * `public/data/series/<variable>/<cell id>.json` (brief format) is used when it
   exists. The build script writes these for the demo locations:
   `{ dates, values, deseasonalised, trend_line, ci_low, ci_high, prediction: { dates, values, low, high }, mann_kendall: { tau, p_value }, total_change }`
@@ -133,8 +133,7 @@ Zoomed out you see continents. Zooming in swaps them for country names, the
 largest countries first and smaller ones up close (positions and size tiers are
 in `src/lib/places.js`). The street map prints its own country names, so only
 continents are added there. A "Place names" switch in the map controls hides
-them all. All three choices are remembered per
-browser.
+them all. Each browser remembers all three choices.
 
 The satellite and night textures in `public/textures` come from the three-globe
 examples.
@@ -156,12 +155,12 @@ every event from the past 30 days, then:
 Opening an event shows the long-term trend at the same spot from our MERRA-2
 data (rainfall for storms and floods, temperature for fires and ice, air
 pollution for volcanoes and dust) and a link to NASA Worldview for that place
-and day. This is how the app adds on to NASA's own tools: Worldview and EONET
+and day. This is how the app builds on NASA's own tools: Worldview and EONET
 show what is happening, and the globe answers whether it fits a long-term trend.
 
 The last good copy is kept in the browser, so a demo on bad Wi-Fi still shows
-events (marked "SAVED" instead of "LIVE"). The "NASA live events" switch in the
-map controls hides it all. Event text from the feed is only ever shown as text,
+events (marked "SAVED" instead of "LIVE"). The "Live NASA events" switch in the
+map controls hides them all. Event text from the feed is only ever shown as text,
 and only http(s) links are kept.
 
 ## Hardware controller
@@ -177,12 +176,12 @@ SENSOR,temp,18.4 live reading (keys: temp, humidity, light, air, rain)
 
 The site sends back `LED,up`, `LED,down` or `LED,none` whenever the selected
 square changes. Without a controller everything works with mouse and keyboard:
-arrow keys spin, `[` and `]` switch variable, Escape closes the panel.
+arrow keys spin, `[` and `]` switch variables, Escape closes the panel.
 
 ## Notes for the team
 
-* Predictions are a straight extension of the trend line, not a climate
-  forecast. The UI says so wherever a projection is shown.
+* Projections in the side panel and time slider are a straight extension of
+  the trend line, not a climate forecast. The UI says so wherever one is shown.
 * Colours are red-orange (rising) and blue (falling), never red-green, and the
   direction is always written in words in the panel as well.
 * All text is at least 14px and every number carries its units.

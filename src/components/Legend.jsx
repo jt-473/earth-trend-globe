@@ -26,7 +26,7 @@ export default function Legend({ varDef, year, startYear }) {
         <span>Pale = not significant (p ≥ 0.05)</span>
       </div>
       <div className="mt-1 text-muted">
-        Globe shows change built up from {startYear} to <span className="mono text-ink">{year}</span>
+        The globe shows the change built up from {startYear} to <span className="mono text-ink">{year}</span>
       </div>
     </aside>
   )
@@ -63,7 +63,7 @@ export function LegendStrip({ varDef, year, startYear }) {
             <span>Pale = not significant (p ≥ 0.05)</span>
           </div>
           <div className="mt-1">
-            Globe shows change built up from {startYear} to <span className="mono text-ink">{year}</span>
+            The globe shows the change built up from {startYear} to <span className="mono text-ink">{year}</span>
           </div>
         </div>
       )}

@@ -19,24 +19,24 @@ const GROUPS = ['Big picture', 'Continents', 'Regions', 'Countries', 'Seas and o
 // Everyday words for each variable.
 const WORDS = {
   temperature: { up: 'warmer', down: 'cooler', high: 'hot', low: 'cold', highest: 'hottest', lowest: 'coldest', change: 'warmed', month: 'warmest' },
-  humidity: { up: 'more humid', down: 'drier', high: 'humid', low: 'dry', highest: 'most humid', lowest: 'driest', change: 'got more humid', month: 'most humid' },
-  rainfall: { up: 'wetter', down: 'drier', high: 'wet', low: 'dry', highest: 'wettest', lowest: 'driest', change: 'got wetter', month: 'wettest' },
-  sunlight: { up: 'sunnier', down: 'dimmer', high: 'bright', low: 'dim', highest: 'brightest', lowest: 'dimmest', change: 'got sunnier', month: 'sunniest' },
-  air_pollution: { up: 'hazier', down: 'clearer', high: 'hazy', low: 'clear', highest: 'haziest', lowest: 'clearest', change: 'got hazier', month: 'haziest' },
+  humidity: { up: 'more humid', down: 'drier', high: 'humid', low: 'dry', highest: 'most humid', lowest: 'driest', change: 'become more humid', month: 'most humid' },
+  rainfall: { up: 'wetter', down: 'drier', high: 'wet', low: 'dry', highest: 'wettest', lowest: 'driest', change: 'become wetter', month: 'wettest' },
+  sunlight: { up: 'sunnier', down: 'dimmer', high: 'bright', low: 'dim', highest: 'brightest', lowest: 'dimmest', change: 'become sunnier', month: 'sunniest' },
+  air_pollution: { up: 'hazier', down: 'clearer', high: 'hazy', low: 'clear', highest: 'haziest', lowest: 'clearest', change: 'become hazier', month: 'haziest' },
   ozone: { up: 'higher in ozone', down: 'lower in ozone', high: 'high-ozone', low: 'low-ozone', highest: 'highest-ozone', lowest: 'lowest-ozone', change: 'gained ozone', month: 'highest-ozone' },
 }
 
 // What the change means in real life. General knowledge, kept short and sourced.
 const WHY = {
   temperature: [
-    ['Heatwaves', 'A small rise in the average means many more very hot days. The UN climate panel (IPCC, 2021) found that heat extremes that used to come once every 10 years now come almost 3 times as often, and more than 4 times at 1.5 °C of warming.'],
+    ['Heatwaves', 'A small rise in the average means many more very hot days. The UN climate panel (IPCC, 2021) found that heat extremes that used to come once every 10 years now come almost 3 times as often, and will come more than 4 times as often at 1.5 °C of warming.'],
     ['Sleep, health and work', 'Hot nights make it harder to sleep and recover. Heat is most dangerous for older people, babies, outdoor workers and people in cities, where concrete holds on to heat.'],
-    ['Food and water', 'Crops such as wheat and maize grow worse in extreme heat, and warmer air dries out soil faster, so droughts hit harder.'],
+    ['Food and water', 'Crops such as wheat and maize produce less in extreme heat, and warmer air dries out soil faster, so droughts hit harder.'],
     ['Ice and sea level', 'Warmer air and oceans melt glaciers and ice sheets, and sea water expands as it warms. Both raise sea level, which reaches coastal cities slowly but keeps going for centuries.'],
   ],
   humidity: [
     ['Heavier downpours', 'Warmer air can hold more water vapour, roughly 7% more for every 1 °C. When it rains, there is more water to fall at once, so floods become more likely.'],
-    ['Feeling the heat', 'Your body cools down by sweating. In humid air sweat dries more slowly, so the same temperature feels hotter and is harder on the body.'],
+    ['Feeling the heat', 'Your body cools down by sweating. In humid air, sweat dries more slowly, so the same temperature feels hotter and is harder on the body.'],
     ['It feeds itself', 'Water vapour traps heat too, so more of it adds a bit more warming on top of what carbon dioxide does.'],
   ],
   rainfall: [
@@ -45,7 +45,7 @@ const WHY = {
     ['Less certain than temperature', 'Rain is patchy and hard to measure from space, so rainfall trends are less certain than temperature trends. Treat these numbers as a rough guide.'],
   ],
   sunlight: [
-    ['Clouds and clean air', 'More sunlight reaching the ground usually means fewer clouds or cleaner air. Europe and North America brightened as air pollution was cut from the 1980s on.'],
+    ['Clouds and clean air', 'More sunlight reaching the ground usually means fewer clouds or cleaner air. Europe and North America brightened as air pollution was cut from the 1980s onwards.'],
     ['Solar power', 'More sunlight is good news for solar panels, but it also heats and dries the ground more.'],
   ],
   air_pollution: [
@@ -319,7 +319,7 @@ export default function OutlookView({ variables, onClose }) {
             </p>
           )}
           <p className="mt-2 text-muted">
-            9 in 10 chance it lands between <span className="mono text-ink">{fmtSigned(lo, dec)}</span> and{' '}
+            There's a 9 in 10 chance it lands between <span className="mono text-ink">{fmtSigned(lo, dec)}</span> and{' '}
             <span className="mono text-ink">{fmtSigned(hi, dec)} {u}</span>. {isRecentModel ? `Trend over the last ${cal.recent_years} years` : `Trend since ${a.start_year}`}:{' '}
             <span className="mono text-ink">{fmtSigned(a.slope_per_decade, dec)} {u}</span> every 10 years.
           </p>
@@ -352,7 +352,7 @@ export default function OutlookView({ variables, onClose }) {
             In 2040 you'll be <span className="font-semibold">{age + (2040 - NOW)}</span>. By then the model expects{' '}
             {Math.abs(more) < 10 ** -dec ? 'about the same again' : (
               <>
-                another <span className="mono font-semibold">{fmt(Math.abs(more), dec)} {u}</span> {more >= 0 ? w.up : w.down}
+                it to be another <span className="mono font-semibold">{fmt(Math.abs(more), dec)} {u}</span> {more >= 0 ? w.up : w.down}
               </>
             )}
             {!sure && ', though it could go either way'}.
@@ -440,7 +440,7 @@ export default function OutlookView({ variables, onClose }) {
               {variableId === 'temperature' && (
                 <p className="mt-2 text-muted">
                   The coldest month, {MONTHS[a.monthly.low.month]}: <span className="mono">{fmt(a.monthly.low.then, dec)}</span> →{' '}
-                  <span className="mono">{fmt(a.monthly.low.in2040s, dec)} {u}</span>. These are averages over the whole area, day and night, so single days get far hotter.
+                  <span className="mono">{fmt(a.monthly.low.in2040s, dec)} {u}</span>. These are averages over the whole area, day and night, so single days can be far hotter or colder.
                 </p>
               )}
             </Card>
@@ -469,7 +469,7 @@ export default function OutlookView({ variables, onClose }) {
         {variableId === 'temperature' && links && links.humidity_percent_per_degree && a.id === 'world' && (
           <Card title="Our data agrees with the physics">
             <p className="text-muted">
-              Physics says warmer air should hold about 7% more water vapour for every 1 °C. In NASA's data the world's air gained{' '}
+              Physics says warmer air should hold about 7% more water vapour for every 1 °C. In NASA's data, the world's air gained{' '}
               <span className="mono text-ink">{fmt(links.humidity_percent_per_degree, 1)}%</span> more water vapour for each degree it warmed. Switch to Humidity to see it.
             </p>
           </Card>
@@ -489,7 +489,7 @@ export default function OutlookView({ variables, onClose }) {
         {bt && (
           <Card title="Can we trust it? We tested it on the past">
             <p className="text-muted">
-              We gave the model only {bt.trained.from}–{bt.trained.to} and asked it to guess {bt.tested.from}–{bt.tested.to}, years we already know. Then we checked.
+              We gave the model only the years {bt.trained.from}–{bt.trained.to} and asked it to guess {bt.tested.from}–{bt.tested.to}, years we already know. Then we checked.
             </p>
             <BacktestChart bt={bt} varDef={varDef} />
             <ul className="mt-2 space-y-1">
@@ -527,8 +527,8 @@ export default function OutlookView({ variables, onClose }) {
                   downs that look like the real ones.
                 </li>
                 <li>
-                  Tested on the past, the first version was too confident: its 9 in 10 ranges caught only {pct(cal.coverage_before)} of real years. So we widened the
-                  uncertainty {cal.spread > 1 ? `${fmt(cal.spread, 1)} times` : ''} until they caught {pct(cal.coverage_after)}.
+                  When we tested it on the past, the first version was too confident: its 9 in 10 ranges caught only {pct(cal.coverage_before)} of real years. So we made the
+                  uncertainty {cal.spread > 1 ? `${fmt(cal.spread, 1)} times bigger` : 'bigger'}, until the ranges caught {pct(cal.coverage_after)}.
                 </li>
               </ol>
               <p>

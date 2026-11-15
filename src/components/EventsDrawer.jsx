@@ -73,7 +73,7 @@ function TrendLink({ event, variables, onShowTrend }) {
         {varDef.name}: {verdict.badge}
       </div>
       <p className="mt-1">{verdict.text}</p>
-      <p className="mt-2 text-muted">One event is weather. A trend over 40+ years is climate.</p>
+      <p className="mt-2 text-muted">One event is weather. A trend over 40 or more years is climate.</p>
       <button type="button" className="btn btn-primary mt-3 w-full justify-center" onClick={() => onShowTrend(event, varDef.id, cell.id)}>
         Open the full {varDef.name.toLowerCase()} trend
       </button>

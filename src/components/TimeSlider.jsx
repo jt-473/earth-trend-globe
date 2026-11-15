@@ -31,7 +31,7 @@ export default function TimeSlider({ year, endYear, playing, onChange, onToggleP
             <span className={`font-semibold ${projected ? 'text-rising' : 'text-accent'}`}>
               {projected ? 'Projected: if this trend continues' : 'Measured'}
             </span>
-            <span className="text-muted hidden xl:inline">Drag to recolour the globe by change since the record began</span>
+            <span className="text-muted hidden xl:inline">Drag to recolour the globe by the change since the record began</span>
           </div>
           <div className="relative h-7">
             <div className="pointer-events-none absolute left-0 right-0 top-1/2 -translate-y-1/2">

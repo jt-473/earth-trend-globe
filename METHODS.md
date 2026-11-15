@@ -1,7 +1,7 @@
 # How Earth Trend Globe calculates everything
 
-Every calculation the globe, the side panel, the data detective and the 2040 outlook
-use. Each one has its proper name (so you can look it up or say it to a judge), the
+This page lists every calculation that the globe, the side panel, the data detective and
+the 2040 outlook use. Each one has its proper name (so you can look it up or say it to a judge), the
 formula, what it means in plain words, and where it shows up in the app.
 
 **Symbols:** $x$ is a monthly value, $a$ is a value with the seasons removed, $t$ is time
@@ -68,7 +68,7 @@ $$c_m = \frac{1}{N_m} \sum_{\text{years}} x_{\text{year}, m}$$
 
 **In plain words:** the normal value for a month (say July) is the average of every July
 in the record.
-**Where you see it:** "Normal" in the Month by month table.
+**Where you see it:** "Normal" in the "Month by month" table.
 
 ### Anomaly (deseasonalising)
 
@@ -147,11 +147,11 @@ $$z = \frac{b}{\text{SE}(b)} \qquad p = 2 \bigl(1 - \Phi(|z|)\bigr) \qquad \Phi(
 Rule: **significant if $p < 0.05$** (the same as $|z| \ge 1.96$).
 
 **In plain words:** $z$ says how many "uncertainties" the slope is away from zero. The
-p-value is the chance of seeing a slope this big if nothing was really changing. Below 5%,
+p-value is the chance of seeing a slope this big if nothing were really changing. Below 5%,
 we call the change real. $\Phi$ is the bell curve's running total; the error function
 erf is worked out with the Abramowitz and Stegun approximation 7.1.26.
 **Where you see it:** the Rising / Falling / No clear trend badges, pale see-through areas
-on the globe, the p-value in The numbers.
+on the globe, the p-value in "The numbers".
 
 ## 5. A second test: Mann–Kendall
 
@@ -168,7 +168,7 @@ $$\mathrm{Var}(S) = \frac{n(n-1)(2n+5)}{18} \qquad z = \frac{S - \mathrm{sign}(S
 "went down". Tau runs from −1 (always falling) to +1 (always rising). Only the order
 matters, so one extreme year can't fake a trend. The "− sign(S)" is a small continuity
 correction.
-**Where you see it:** Mann-Kendall tau and p-value in The numbers.
+**Where you see it:** Mann-Kendall tau and p-value in "The numbers".
 
 ## 6. Confidence band and side-panel projection
 
@@ -218,8 +218,8 @@ $$\text{strength} = \left|\mathrm{clamp}\left(\frac{\text{change}}{R}, -1, 1\rig
 **In plain words:** the 0.7 power lifts medium-sized changes so they still show. The colour
 is picked by linear interpolation along a 5-colour ramp (pale cream → yellow → orange → red
 for rising, pale → light blue → deep blue for falling). Places that aren't significant get
-a light grey at 22% opacity. The Trend colours slider then scales the opacity: up to 70%
-it fades everything in, above 70% it fills in towards solid.
+a light grey at 22% opacity. The "Trend colours" slider then scales the opacity: up to
+70%, it fades everything in; above 70%, it fills in towards solid.
 
 ### Binomial smoothing filter and bilinear interpolation
 
@@ -328,8 +328,8 @@ futures" lines (the runs at the 15th, 40th, 60th and 85th percentile of 2040).
 
 $$\text{for each area: ratio} = \frac{\text{MAE of the model}}{\text{MAE of "no change"}} \qquad \text{keep the version with the lower median ratio across 184 areas}$$
 
-**In plain words:** we built two versions: one fits the trend to the whole record, one to
-the last 20 years only. Both were tested on the past (section 11). Whichever guessed
+**In plain words:** we built two versions: one fits the trend to the whole record, and the
+other to the last 20 years only. Both were tested on the past (section 11). Whichever guessed
 better is used for that variable.
 
 ## 11. Testing on the past
@@ -430,10 +430,10 @@ together.
 * **Not a climate model.** It learns only from the pattern in NASA's data. It doesn't know
   about future emissions, policy or physics. IPCC climate models simulate those.
 * **Straight lines.** The trend is a straight line (over the whole record or the last 20
-  years). If change speeds up a lot, the forecast will be too low; the Compare line on the
+  years). If change speeds up a lot, the forecast will be too low; the "Compare" line on the
   2040 screen shows the other version.
 * **Surprises.** A big volcanic eruption or a very strong El Niño can push a single year
   outside the range. The ranges are tuned to catch 9 in 10 years, not all of them.
-* **Grid, not cities.** Values are NASA's grid sampled every 2 degrees (about 220 km), so a
-  city is part of a much bigger square. Rainfall from reanalysis is less certain than
+* **Grid, not cities.** Values come from NASA's grid, sampled every 2 degrees (about 220 km),
+  so a city is part of a much bigger square. Rainfall from reanalysis is less certain than
   temperature.

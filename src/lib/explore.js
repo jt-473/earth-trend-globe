@@ -99,7 +99,7 @@ const HINTS = {
     humidity: 'Very dry air means small changes in moisture stand out.',
     sunlight: 'Few clouds, so changes in dust can change how much sunlight gets through.',
     air_pollution: 'Desert dust is a big part of the haze in the air.',
-    ozone: 'Ozone above deserts follows the global pattern, a useful comparison.',
+    ozone: 'Ozone above deserts follows the global pattern, which makes it a useful comparison.',
   },
   rainforest: {
     temperature: 'Clearing forest can warm the land around it.',
@@ -107,7 +107,7 @@ const HINTS = {
     humidity: 'Forests breathe out water, so humidity can follow forest health.',
     sunlight: 'Smoke from fires and changing clouds affect the sunlight reaching the ground.',
     air_pollution: 'Fire season smoke can show up as haze.',
-    ozone: 'Tropical ozone changes slowly, a good test of a "no trend" result.',
+    ozone: 'Tropical ozone changes slowly, which makes it a good test of a "no trend" result.',
   },
   cities: {
     temperature: 'Cities trap heat, and farming changes the land surface.',
@@ -123,7 +123,7 @@ const HINTS = {
     humidity: 'Warmer sea surfaces put more water vapour into the air.',
     sunlight: 'Changing cloud cover over the ocean changes the sunlight reaching the surface.',
     air_pollution: 'Smoke and dust blow far out over the sea.',
-    ozone: 'Shows the global ozone pattern without local pollution.',
+    ozone: 'It shows the global ozone pattern without local pollution.',
   },
   ice: {
     temperature: 'The poles can change faster than anywhere else, and not always in the same direction.',
@@ -139,15 +139,15 @@ const HINTS = {
     humidity: 'Thin, dry air at height means small changes stand out.',
     sunlight: 'Less snow and changing clouds affect sunlight on the slopes.',
     air_pollution: 'Haze from nearby lowlands can drift up the valleys.',
-    ozone: 'High ground sits under less air, a useful ozone comparison.',
+    ozone: 'High ground sits under less air, which makes it a useful ozone comparison.',
   },
   grassland: {
     temperature: 'Dry grasslands swing between drought and wet years.',
     rainfall: 'Rain decides whether grass grows, so trends matter to farmers and herders.',
-    humidity: 'Shows whether the air is getting drier as it warms.',
+    humidity: 'It shows whether the air is getting drier as it warms.',
     sunlight: 'Dust and fire smoke can dim the sun.',
     air_pollution: 'Grass fires and dust both add haze.',
-    ozone: 'A steady background place for comparing ozone.',
+    ozone: 'It is a steady background place for comparing ozone.',
   },
   forest: {
     temperature: 'Northern forests are warming fast, with longer summers.',
@@ -155,15 +155,15 @@ const HINTS = {
     humidity: 'More moisture in the air can come with the warming.',
     sunlight: 'Wildfire smoke can block sunlight in summer.',
     air_pollution: 'Wildfire smoke shows up as haze in bad fire years.',
-    ozone: 'High latitudes saw some of the larger ozone changes.',
+    ozone: 'High latitudes saw some of the largest ozone changes.',
   },
   coast: {
-    temperature: 'The sea next door slows warming, a good contrast with inland places.',
+    temperature: 'The sea next door slows warming, which makes a good contrast with inland places.',
     rainfall: 'Storm tracks shifting north or south change coastal rain.',
     humidity: 'Warmer seas nearby can make the air more humid.',
     sunlight: 'Coastal clouds and haze change the light reaching the ground.',
     air_pollution: 'Shipping and nearby cities add to the haze.',
-    ozone: 'A comparison with nearby inland places.',
+    ozone: 'It makes a useful comparison with nearby inland places.',
   },
 }
 
@@ -225,7 +225,7 @@ export function describeStats(q, varDef) {
   if (!q) return ''
   const pct = (x) => `${Math.round(x * 100)}%`
   const tone = statsTone(q)
-  if (tone === 'mixed') return `Mixed: significant rise over ${pct(q.upShare)} of the area, significant fall over ${pct(q.downShare)}`
+  if (tone === 'mixed') return `Mixed: a significant rise over ${pct(q.upShare)} of the area and a significant fall over ${pct(q.downShare)}`
   if (tone === 'up') return `${varDef.verbs.up} · significant over ${pct(q.upShare)} of the area`
   if (tone === 'down') return `${varDef.verbs.down} · significant over ${pct(q.downShare)} of the area`
   return 'No clear trend over most of the area'

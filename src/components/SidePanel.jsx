@@ -103,7 +103,7 @@ export default function SidePanel({
             <p className="mt-2 text-muted">
               Direction in words: <span className="text-ink">{directionWord(cell)}</span>.{' '}
               <button type="button" className="link-quiet" onClick={onOpenSignificance}>
-                What does significant mean?
+                What does "significant" mean?
               </button>
             </p>
             {notYet && <p className="mt-2 border-t border-slate-400/15 pt-2">{notYet}</p>}
@@ -126,7 +126,7 @@ export default function SidePanel({
         >
           <TrendChart series={series} varDef={varDef} deseasonalised={deseasonalised} year={year} endYear={endYear} />
           <p className="mt-3 rounded-xl border border-rising/30 bg-rising/5 px-3 py-2 text-muted">
-            <span className="font-semibold text-rising">If this trend continues…</span> the dotted line extends the measured trend to 2040. It is a
+            <span className="font-semibold text-rising">If this trend continues:</span> the dotted line extends the measured trend to 2040. It is a
             straight-line extension, not a climate forecast, and the band widens because the further ahead we look, the less certain we are.
           </p>
           {cell.isRegion && (
@@ -197,7 +197,7 @@ export default function SidePanel({
                     <div className="min-w-0">
                       <div className="font-semibold">{v.name}</div>
                       <div className="mono text-muted truncate">
-                        {s ? `${fmtSigned(s.slope_per_decade, v.decimals)} ${v.units}/decade` : '…'}
+                        {s ? `${fmtSigned(s.slope_per_decade, v.decimals)} ${v.units.replace(' per ', '/')}/decade` : '…'}
                         {s && !sig ? ' · not sig.' : ''}
                       </div>
                     </div>
@@ -221,7 +221,7 @@ export default function SidePanel({
                   <div className="text-muted">right now, in this room</div>
                 </div>
                 <div className="rounded-xl border border-slate-400/20 bg-slate-400/5 p-3">
-                  <div className="text-muted">NASA latest value</div>
+                  <div className="text-muted">NASA's latest value</div>
                   <div className="mono mt-1 text-2xl font-semibold">
                     {latest === null ? '–' : fmt(latest, varDef.decimals)} <span className="text-base text-muted">{varDef.units}</span>
                   </div>
@@ -230,7 +230,7 @@ export default function SidePanel({
               </div>
             ) : (
               <p className="text-muted">
-                Connect the controller box to compare the {varDef.sensor.name.toLowerCase()} in this room with NASA's latest value for this place.
+                Connect the controller box to compare the reading from the {varDef.sensor.name.replace(' (optional)', '').replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase())} in this room with NASA's latest value for this place.
               </p>
             )}
           </Section>

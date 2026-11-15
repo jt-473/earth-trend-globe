@@ -75,7 +75,7 @@ export default function MapControls({
       {onChangeEvents && (
         <label className="mt-3 flex cursor-pointer items-center justify-between gap-3 px-1">
           <span>
-            <span className="block font-semibold">NASA live events</span>
+            <span className="block font-semibold">Live NASA events</span>
             <span className="block text-muted">Storms, floods, fires and ice</span>
           </span>
           <input

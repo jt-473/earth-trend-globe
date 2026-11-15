@@ -2,7 +2,7 @@ import Modal from './Modal.jsx'
 
 export default function SignificanceExplainer({ onClose }) {
   return (
-    <Modal title="What does significant mean?" onClose={onClose}>
+    <Modal title='What does "significant" mean?' onClose={onClose}>
       <p className="text-lg font-semibold leading-snug">Imagine flipping a coin.</p>
       <p className="mt-2 text-muted">
         Flip it 10 times and get 7 heads. Suspicious, but it happens by luck fairly often, so you would not call the coin biased. Flip it 1,000 times and get 700

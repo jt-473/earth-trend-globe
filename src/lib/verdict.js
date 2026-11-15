@@ -8,7 +8,7 @@ export function buildVerdict(cell, varDef) {
     return {
       badge: 'No clear trend',
       tone: 'none',
-      text: `${varDef.verbs.none} here. It moves by about ${amount} every 10 years, but a change that small could easily be random.`,
+      text: `${varDef.verbs.none} here. The value moves by about ${amount} every 10 years, but a change that small could easily be random.`,
     }
   }
   const up = cell.direction === 'up'

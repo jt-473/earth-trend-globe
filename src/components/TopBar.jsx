@@ -1,7 +1,7 @@
 export default function TopBar({ variables, variableId, onChangeVariable, onHowItWorks, onInvestigate, onOutlook, serial, onToggleSerial }) {
   const status = serial.status
   const serialLabel =
-    status === 'connected' ? 'Controller connected' : status === 'connecting' ? 'Connecting…' : status === 'unsupported' ? 'Controller (Chrome only)' : 'Connect controller'
+    status === 'connected' ? 'Controller connected' : status === 'connecting' ? 'Connecting…' : status === 'unsupported' ? 'Controller (Chrome or Edge only)' : 'Connect controller'
   return (
     <header className="pointer-events-auto absolute inset-x-0 top-0 z-20 flex items-center gap-3 px-4 py-3 md:px-6">
       {/* On phones the title gives way to the variable menu; the intro screen names the app. */}

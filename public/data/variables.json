@@ -30,7 +30,7 @@
       "colour_range_per_decade": 0.25,
       "verbs": {
         "up": "Getting more humid",
-        "down": "Getting drier air",
+        "down": "Air getting drier",
         "none": "No clear change in humidity"
       },
       "sensor": {
@@ -100,7 +100,7 @@
     {
       "id": "ozone",
       "name": "Ozone",
-      "definition": "The total amount of ozone above a spot, the layer that blocks harmful UV",
+      "definition": "The total amount of ozone above a spot, which forms the layer that blocks harmful UV",
       "units": "DU",
       "units_long": "Dobson units",
       "units_per_decade": "DU per decade",

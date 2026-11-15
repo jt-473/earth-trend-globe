@@ -130,7 +130,7 @@ export default function DataDetective({ variables, regionsFile, initialVariable,
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search a place: Amazon, India, Sahara, Arctic…"
+              placeholder="Search for a place: Amazon, India, Sahara, Arctic…"
               className="w-full rounded-xl border border-slate-400/25 bg-slate-400/10 px-3 py-2 text-ink placeholder:text-slate-400 focus:border-accent focus:outline-none"
               autoComplete="off"
             />
@@ -147,7 +147,7 @@ export default function DataDetective({ variables, regionsFile, initialVariable,
               <>
                 <div className="mt-3 text-muted">Or pick a kind of place:</div>
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {[{ id: 'anywhere', label: 'Anywhere: biggest changes' }, ...PLACE_KINDS].map((k) => {
+                  {[{ id: 'anywhere', label: 'Anywhere: the biggest changes' }, ...PLACE_KINDS].map((k) => {
                     const active = where && (where.kind === 'anywhere' ? k.id === 'anywhere' : where.id === k.id)
                     return (
                       <button
